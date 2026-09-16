@@ -1,78 +1,65 @@
 # TinyDungeon
 
-TinyDungeon è un piccolo dungeon crawler cooperativo 16-bit pensato per 1-3 giocatori.
+TinyDungeon è un piccolo dungeon crawler cooperativo 16-bit pensato per 1-3 giocatori, con ritmo tranquillo, piccoli puzzle, combattimenti leggeri e compagni AI per gli slot non occupati.
 
-## Visione
+## Architettura
 
-- vista top-down 16-bit
-- ritmo tranquillo, leggibile e adatto anche a bambini
-- stanze compatte con piccoli puzzle, leve, chiavi, casse e combattimenti leggeri
-- 1 giocatore + 2 compagni AI, 2 giocatori + 1 AI, oppure 3 giocatori umani
-- nessun ruolo obbligatorio: tutti possono muoversi, combattere e interagire
-- sessioni brevi, idealmente 10-15 minuti
+TinyDungeon viene distribuito **solo su Cloudflare Workers**.
+
+Un singolo deployment pubblica:
+
+- il frontend statico da `public/` tramite Cloudflare Workers Static Assets;
+- il backend realtime da `worker/src/index.js`;
+- le stanze multiplayer tramite Durable Objects e WebSocket;
+- lo stato di coordinamento della room nello stesso Durable Object.
+
+Frontend e multiplayer condividono lo stesso origin, quindi non serve configurare URL esterni o usare GitHub Pages.
 
 ## Modalità
 
-### Solo
+- **Solo**: 1 giocatore + 2 compagni AI.
+- **Stanza online**: fino a 3 giocatori umani; gli slot liberi restano AI.
+- Il creatore della stanza è l'host autorevole della simulazione.
+- Gli altri giocatori inviano input; l'host distribuisce snapshot dello stato.
+- Il link della stanza contiene `?room=CODICE` ed è copiabile dalla lobby.
 
-`Gioca da solo` avvia subito il dungeon con il Knight controllato dal giocatore e Rogue/Mage gestiti dall'AI.
-
-### Multiplayer online
-
-Il menu permette di creare una stanza o entrare con un codice. Ogni stanza supporta fino a 3 giocatori:
-
-- il creatore è l'host
-- gli slot non occupati sono gestiti dall'AI
-- il link contiene `?room=CODICE` ed è condivisibile con il pulsante `Copia link`
-- aprendo il link il client prova automaticamente a entrare nella stanza
-- l'host avvia la partita dalla lobby
-
-Il modello è host-authoritative: l'host simula mondo, nemici e AI; gli altri client inviano gli input e ricevono snapshot dello stato. Il relay realtime è un Cloudflare Worker con un Durable Object per stanza.
-
-## Client statico
-
-La root del repository può essere pubblicata direttamente con GitHub Pages. Per l'avvio locale:
-
-```bash
-python -m http.server 8080
-```
-
-Poi aprire `http://localhost:8080`.
-
-## Backend Cloudflare
-
-Il backend si trova in `worker/`.
+## Sviluppo locale
 
 ```bash
 cd worker
 npm install
-npx wrangler login
+npm run dev
+```
+
+Wrangler serve sia gli asset in `../public` sia le API/WebSocket del Worker.
+
+## Deploy Cloudflare
+
+```bash
+cd worker
+npm install
 npm run deploy
 ```
 
-Dopo il deploy, copiare l'URL HTTPS restituito da Wrangler in `config.js`:
+Il file `worker/wrangler.jsonc` è la source of truth del deployment. Il servizio si chiama `tinydungeon` e include nello stesso deploy Static Assets + Durable Object `Room`.
 
-```js
-window.TINY_DUNGEON_CONFIG = {
-  multiplayerApiBase: 'https://tinydungeon-room.<account>.workers.dev'
-};
+Dopo il deploy non è necessario modificare `config.js`: il client usa automaticamente `window.location.origin` per creare e raggiungere le stanze multiplayer.
+
+## Struttura
+
+```text
+public/
+  index.html
+  styles.css
+  config.js
+  network.js
+  game.js
+worker/
+  package.json
+  wrangler.jsonc
+  src/index.js
 ```
-
-Endpoint principali:
-
-- `GET /health`
-- `POST /rooms`
-- `GET /rooms/:code/ws` con upgrade WebSocket
-
-La configurazione usa Durable Objects con storage SQLite e lifecycle dichiarativo tramite `exports` in `worker/wrangler.jsonc`.
 
 ## Vertical slice
 
-La slice corrente contiene:
-
-- mini-dungeon giocabile con leva, cancello, forziere, chiave e portale
-- tre eroi 16-bit: Knight, Rogue e Mage
-- controlli desktop e touch
-- slime lenti e combattimento leggero
-- compagni AI per gli slot liberi
-- menu iniziale, lobby e stanze condivisibili
+La slice attuale include tre eroi, AI semplice, slime, leva, cancello, forziere, chiave, portale, controlli desktop/touch, menu iniziale e lobby condivisibile.

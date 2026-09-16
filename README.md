@@ -22,10 +22,13 @@ Frontend e multiplayer condividono lo stesso origin, quindi non serve configurar
 - Il creatore della stanza è l'host autorevole della simulazione.
 - Gli altri giocatori inviano input; l'host distribuisce snapshot dello stato.
 - Il link della stanza contiene `?room=CODICE` ed è copiabile dalla lobby.
+- La difficoltà viene scelta dall'host e inclusa negli snapshot della partita.
 
-## Primo dungeon
+## Campagne e difficoltà
 
-La vertical slice comprende ora un dungeon completo da **8 stanze**, progettato secondo la regola "una stanza = un problema chiaro":
+TinyDungeon comprende **24 stanze**, divise in tre campagne indipendenti da 8 stanze ciascuna.
+
+### Facile · Il primo dungeon
 
 1. **La leva** — attivare il meccanismo che apre la porta.
 2. **Le tre piastre** — occupazione simultanea; i bot aiutano automaticamente quando presenti.
@@ -34,9 +37,17 @@ La vertical slice comprende ora un dungeon completo da **8 stanze**, progettato 
 5. **La guardia** — combattimento leggero contro slime e scheletri.
 6. **La chiave** — eliminare i custodi e recuperare la Chiave Antica.
 7. **Le tre fiamme** — accendere le torce nell'ordine I, II, III.
-8. **Il guardiano** — miniboss Golem di Pietra, lento e leggibile, poi portale finale.
+8. **Il guardiano** — miniboss Golem di Pietra e portale finale.
 
-Il progresso di stanza, puzzle, nemici, chiave, boss e personaggi è incluso negli snapshot multiplayer host-authoritative.
+### Media · Le rune profonde
+
+Combina puzzle già conosciuti con più passaggi e combattimenti: doppie rune, piastre sorvegliate, due massi, ponte con custodi, una sala di combattimento più ricca, uno scrigno con quattro guardiani, una sequenza di quattro rune e un boss rinforzato.
+
+### Difficile · La cripta gemella
+
+Aumenta soprattutto coordinazione e complessità: tre sigilli temporizzati, piastre sotto assedio, labirinto con due massi, ponte sorvegliato, cripta con gruppo misto di nemici, custode maggiore della chiave, sequenza di quattro fiamme e due Golem finali con rinforzi.
+
+La difficoltà non trasforma il gioco in una modalità frenetica: i nemici restano leggibili e le stanze mantengono un obiettivo chiaro.
 
 ## Mobile / PWA
 
@@ -78,7 +89,7 @@ public/
   mobile.css
   config.js
   network.js
-  game.js
+  game-v2.js
   app.js
   manifest.webmanifest
   sw.js

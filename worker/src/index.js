@@ -1,16 +1,16 @@
 import { DurableObject } from 'cloudflare:workers';
 
 const ROOM_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const corsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-headers': 'content-type',
+  'access-control-allow-methods': 'GET,POST,OPTIONS'
+};
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: {
-      'content-type': 'application/json; charset=utf-8',
-      'access-control-allow-origin': '*',
-      'access-control-allow-headers': 'content-type',
-      'access-control-allow-methods': 'GET,POST,OPTIONS'
-    }
+    headers: { 'content-type': 'application/json; charset=utf-8', ...corsHeaders }
   });
 }
 
@@ -23,7 +23,7 @@ function roomCode() {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (request.method === 'OPTIONS') return json({}, 204);
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders });
 
     if (request.method === 'POST' && url.pathname === '/rooms') {
       for (let attempt = 0; attempt < 6; attempt++) {
@@ -81,7 +81,7 @@ export class Room extends DurableObject {
     if (await this.ctx.storage.get('started')) return new Response('Game already started', { status: 409 });
     if (this.sessions.size >= 3) return new Response('Room full', { status: 409 });
 
-    const usedSlots = new Set([...this.sessions.values()].map(s => s.slot));
+    const usedSlots = new Set([...this.sessions.values()].map(session => session.slot));
     const slot = [0, 1, 2].find(value => !usedSlots.has(value));
     const host = this.sessions.size === 0;
     const rawName = url.searchParams.get('name') || 'Avventuriero';
@@ -114,9 +114,8 @@ export class Room extends DurableObject {
   broadcast(payload, except = null) {
     const text = JSON.stringify(payload);
     for (const ws of this.sessions.keys()) {
-      if (ws !== except) {
-        try { ws.send(text); } catch { /* stale socket */ }
-      }
+      if (ws === except) continue;
+      try { ws.send(text); } catch { /* stale socket */ }
     }
   }
 
@@ -149,9 +148,7 @@ export class Room extends DurableObject {
       return;
     }
 
-    if (message.type === 'restart' && session.host) {
-      this.broadcast({ type: 'restart' });
-    }
+    if (message.type === 'restart' && session.host) this.broadcast({ type: 'restart' });
   }
 
   async webSocketClose(ws, code, reason) {

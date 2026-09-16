@@ -93,16 +93,49 @@
     setKeys(dirs[(octant + 8) % 8]);
   }
 
+  function isFloatingZone(event) {
+    if (!document.body.classList.contains('game-playing')) return false;
+    if (!window.matchMedia('(orientation: landscape)').matches) return false;
+    if (event.pointerType === 'mouse' && event.button !== 0) return false;
+    if (event.clientX > window.innerWidth * 0.52) return false;
+
+    const blocked = event.target instanceof Element
+      ? event.target.closest('button, input, select, a, .topbar, .rotate-overlay')
+      : null;
+    return !blocked;
+  }
+
+  function placeBase(clientX, clientY) {
+    const currentRect = base.getBoundingClientRect();
+    const radius = Math.max(48, currentRect.width / 2 || 62);
+    const margin = 8;
+    const maxLeft = Math.max(radius + margin, window.innerWidth * 0.52 - radius - margin);
+    const minY = radius + margin;
+    const maxY = Math.max(minY, window.innerHeight - radius - 22);
+    const x = Math.min(Math.max(clientX, radius + margin), maxLeft);
+    const y = Math.min(Math.max(clientY, minY), maxY);
+
+    base.classList.add('floating');
+    base.style.left = `${x}px`;
+    base.style.top = `${y}px`;
+    base.style.right = 'auto';
+    base.style.bottom = 'auto';
+    base.style.transform = 'translate(-50%, -50%) scale(.82)';
+    base.style.transformOrigin = 'center center';
+  }
+
   function start(event) {
-    if (dragging) return;
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (dragging || !isFloatingZone(event)) return;
 
     event.preventDefault();
     pointerId = event.pointerId;
     dragging = true;
 
+    // Floating joystick: every new touch on the left half becomes the new center.
+    placeBase(event.clientX, event.clientY);
+    neutral();
+
     try { base.setPointerCapture(pointerId); } catch { /* global listeners keep tracking */ }
-    updateFromPointer(event.clientX, event.clientY);
   }
 
   function move(event) {
@@ -126,10 +159,8 @@
     neutral();
   }
 
-  base.addEventListener('pointerdown', start, { passive: false });
-
-  // Track on window in capture phase: on mobile browsers this remains reliable even
-  // when the finger leaves the joystick element or the DOM hit-target changes.
+  // Capture the initial press anywhere on the left side, not only on the visible joystick.
+  window.addEventListener('pointerdown', start, { passive: false, capture: true });
   window.addEventListener('pointermove', move, { passive: false, capture: true });
   window.addEventListener('pointerup', release, { capture: true });
   window.addEventListener('pointercancel', release, { capture: true });

@@ -26,6 +26,14 @@
         <label class="field-label" for="nickname">Nome giocatore</label>
         <input id="nickname" class="pixel-input" maxlength="18" autocomplete="nickname" placeholder="Avventuriero" />
 
+        <label class="field-label difficulty-label" for="difficultySelect">Difficoltà · 8 stanze per campagna</label>
+        <select id="difficultySelect" class="pixel-input difficulty-select" aria-label="Difficoltà">
+          <option value="easy">Facile · Il primo dungeon</option>
+          <option value="medium">Media · Le rune profonde</option>
+          <option value="hard">Difficile · La cripta gemella</option>
+        </select>
+        <div class="difficulty-hint">Nelle stanze online decide la difficoltà scelta dall’host.</div>
+
         <div class="menu-actions">
           <button id="soloBtn" class="pixel-button primary" type="button">Gioca da solo</button>
           <button id="createRoomBtn" class="pixel-button" type="button">Crea stanza</button>
@@ -82,7 +90,7 @@
 
         <aside class="legend">
           <div class="legend-title">Obiettivo</div>
-          <div id="objective">Trova la leva, recupera la chiave e raggiungi il portale.</div>
+          <div id="objective">Supera le otto stanze del dungeon.</div>
           <div class="legend-title controls-title">Controlli</div>
           <div class="controls-grid">
             <div><strong>Movimento</strong><span>WASD o frecce</span></div>
@@ -105,7 +113,7 @@
         </div>
       </section>
 
-      <footer class="footer-note">TinyDungeon · 16-bit co-op · fino a 3 giocatori.</footer>
+      <footer class="footer-note">TinyDungeon · 16-bit co-op · fino a 3 giocatori · 3 campagne.</footer>
     </section>
   </main>
 
@@ -120,7 +128,7 @@
 
   <script src="config.js"></script>
   <script src="network.js"></script>
-  <script src="game.js"></script>
+  <script src="game-v2.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -12,11 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check JavaScript syntax
-        run: node --check game.js
-      - name: Verify required static files
         run: |
-          test -s index.html
-          test -s styles.css
-          test -s game.js
-          grep -q 'TinyDungeon' index.html
-          grep -q 'canvas' index.html
+          node --check public/game.js
+          node --check public/network.js
+          node --check public/config.js
+          node --check worker/src/index.js
+      - name: Verify Cloudflare application layout
+        run: |
+          test -s public/index.html
+          test -s public/styles.css
+          test -s public/game.js
+          test -s public/network.js
+          test -s public/config.js
+          test -s worker/wrangler.jsonc
+          grep -q 'TinyDungeon' public/index.html
+          grep -q 'Crea stanza' public/index.html
+          grep -q '"directory": "../public"' worker/wrangler.jsonc
+          grep -q 'window.location.origin' public/config.js

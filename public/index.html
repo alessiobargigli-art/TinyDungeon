@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <meta name="theme-color" content="#17151d" />
+  <title>TinyDungeon</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section id="menuScreen" class="menu-screen">
+      <div class="menu-panel">
+        <div class="eyebrow">16-BIT CO-OP ADVENTURE</div>
+        <h1>TinyDungeon</h1>
+        <p class="menu-copy">Una piccola avventura cooperativa da giocare da soli o insieme.</p>
+
+        <label class="field-label" for="nickname">Nome giocatore</label>
+        <input id="nickname" class="pixel-input" maxlength="18" autocomplete="nickname" placeholder="Avventuriero" />
+
+        <div class="menu-actions">
+          <button id="soloBtn" class="pixel-button primary" type="button">Gioca da solo</button>
+          <button id="createRoomBtn" class="pixel-button" type="button">Crea stanza</button>
+        </div>
+
+        <div class="join-row">
+          <input id="roomCodeInput" class="pixel-input room-code-input" maxlength="8" inputmode="text" placeholder="CODICE" aria-label="Codice stanza" />
+          <button id="joinRoomBtn" class="pixel-button secondary" type="button">Entra</button>
+        </div>
+        <div id="menuStatus" class="menu-status" role="status"></div>
+      </div>
+    </section>
+
+    <section id="lobbyScreen" class="menu-screen hidden">
+      <div class="menu-panel lobby-panel">
+        <div class="eyebrow">STANZA MULTIPLAYER</div>
+        <h2 id="roomTitle">Stanza</h2>
+        <div class="room-code-card">
+          <span>Codice</span>
+          <strong id="roomCodeLabel">------</strong>
+        </div>
+        <div id="playerList" class="player-list"></div>
+        <div class="lobby-actions">
+          <button id="copyLinkBtn" class="pixel-button" type="button">Copia link</button>
+          <button id="startRoomBtn" class="pixel-button primary" type="button">Avvia partita</button>
+          <button id="leaveRoomBtn" class="pixel-button secondary" type="button">Esci</button>
+        </div>
+        <div id="lobbyStatus" class="menu-status" role="status"></div>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="hidden">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">16-BIT CO-OP ADVENTURE</div>
+          <h1>TinyDungeon</h1>
+        </div>
+        <div class="topbar-actions">
+          <div id="roomBadge" class="room-badge hidden"></div>
+          <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
+          <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu</button>
+        </div>
+      </header>
+
+      <section class="game-card">
+        <div class="canvas-wrap">
+          <canvas id="game" width="960" height="540" aria-label="TinyDungeon"></canvas>
+          <div id="message" class="game-message" role="status" aria-live="polite"></div>
+        </div>
+
+        <aside class="legend">
+          <div class="legend-title">Obiettivo</div>
+          <div id="objective">Trova la leva, recupera la chiave e raggiungi il portale.</div>
+          <div class="legend-title controls-title">Controlli</div>
+          <div class="controls-grid">
+            <div><strong>Movimento</strong><span>WASD o frecce</span></div>
+            <div><strong>Attacco</strong><span>F o Invio</span></div>
+            <div><strong>Interagisci</strong><span>E o Shift</span></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="touch-panel" aria-label="Controlli touch">
+        <div class="dpad">
+          <button data-touch="up" aria-label="Su">▲</button>
+          <button data-touch="left" aria-label="Sinistra">◀</button>
+          <button data-touch="down" aria-label="Giù">▼</button>
+          <button data-touch="right" aria-label="Destra">▶</button>
+        </div>
+        <div class="touch-actions">
+          <button data-touch="interact" class="touch-interact">USA</button>
+          <button data-touch="attack" class="touch-attack">ATTACCA</button>
+        </div>
+      </section>
+
+      <footer class="footer-note">TinyDungeon · 16-bit co-op · fino a 3 giocatori.</footer>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="network.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

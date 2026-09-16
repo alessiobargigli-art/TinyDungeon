@@ -44,13 +44,15 @@ jobs:
           grep -q 'joystick.js' public/index.html
           grep -q 'version.js' public/index.html
           grep -q 'data-app-version' public/index.html
-          grep -q 'v2026.09.17.1' public/version.js
+          grep -q 'v2026.09.17.2' public/version.js
+          grep -q 'window.innerWidth \* 0.52' public/joystick.js
+          grep -q 'placeBase' public/joystick.js
           grep -q 'manifest.webmanifest' public/index.html
           grep -q 'Fullscreen' public/index.html
           grep -q 'FACILE' public/game-v2.js
           grep -q 'MEDIA' public/game-v2.js
           grep -q 'DIFFICILE' public/game-v2.js
-          grep -q 'tinydungeon-shell-v7' public/sw.js
+          grep -q 'tinydungeon-shell-v8' public/sw.js
           grep -q '"orientation": "landscape"' public/manifest.webmanifest
           grep -q '"directory": "../public"' worker/wrangler.jsonc
           grep -q 'window.location.origin' public/config.js

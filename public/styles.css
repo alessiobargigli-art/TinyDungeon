@@ -24,6 +24,9 @@ button, select, input { font: inherit; }
 .pixel-input, select, .pixel-button { border: 2px solid #6c5a73; background: #19161e; color: var(--ink); border-radius: 6px; padding: 10px 12px; box-shadow: 0 3px 0 #0d0c10; }
 .pixel-input { width: 100%; outline: none; }
 .pixel-input:focus { border-color: var(--gold); }
+.difficulty-label { margin-top: 16px; }
+.difficulty-select { appearance: none; cursor: pointer; background-image: linear-gradient(45deg, transparent 50%, #f0b35e 50%), linear-gradient(135deg, #f0b35e 50%, transparent 50%); background-position: calc(100% - 17px) 16px, calc(100% - 12px) 16px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 34px; }
+.difficulty-hint { margin-top: 7px; color: var(--muted); font-size: 11px; line-height: 1.35; }
 .pixel-button { cursor: pointer; font-weight: 900; }
 .pixel-button:hover { border-color: #8c7395; }
 .pixel-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #0d0c10; }

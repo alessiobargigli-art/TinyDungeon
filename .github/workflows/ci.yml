@@ -13,7 +13,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check JavaScript syntax
         run: |
-          node --check public/game.js
+          node --check public/game-v2.js
+          node --check public/joystick.js
           node --check public/network.js
           node --check public/config.js
           node --check public/app.js
@@ -24,7 +25,8 @@ jobs:
           test -s public/index.html
           test -s public/styles.css
           test -s public/mobile.css
-          test -s public/game.js
+          test -s public/game-v2.js
+          test -s public/joystick.js
           test -s public/network.js
           test -s public/config.js
           test -s public/app.js
@@ -35,8 +37,15 @@ jobs:
           test -s worker/wrangler.jsonc
           grep -q 'TinyDungeon' public/index.html
           grep -q 'Crea stanza' public/index.html
+          grep -q 'difficultySelect' public/index.html
+          grep -q 'moveJoystick' public/index.html
+          grep -q 'joystick.js' public/index.html
           grep -q 'manifest.webmanifest' public/index.html
           grep -q 'Fullscreen' public/index.html
+          grep -q 'FACILE' public/game-v2.js
+          grep -q 'MEDIA' public/game-v2.js
+          grep -q 'DIFFICILE' public/game-v2.js
+          grep -q 'tinydungeon-shell-v5' public/sw.js
           grep -q '"orientation": "landscape"' public/manifest.webmanifest
           grep -q '"directory": "../public"' worker/wrangler.jsonc
           grep -q 'window.location.origin' public/config.js

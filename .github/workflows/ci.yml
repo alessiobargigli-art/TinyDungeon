@@ -16,16 +16,27 @@ jobs:
           node --check public/game.js
           node --check public/network.js
           node --check public/config.js
+          node --check public/app.js
+          node --check public/sw.js
           node --check worker/src/index.js
       - name: Verify Cloudflare application layout
         run: |
           test -s public/index.html
           test -s public/styles.css
+          test -s public/mobile.css
           test -s public/game.js
           test -s public/network.js
           test -s public/config.js
+          test -s public/app.js
+          test -s public/sw.js
+          test -s public/manifest.webmanifest
+          test -s public/icons/icon-192.png
+          test -s public/icons/icon-512.png
           test -s worker/wrangler.jsonc
           grep -q 'TinyDungeon' public/index.html
           grep -q 'Crea stanza' public/index.html
+          grep -q 'manifest.webmanifest' public/index.html
+          grep -q 'Fullscreen' public/index.html
+          grep -q '"orientation": "landscape"' public/manifest.webmanifest
           grep -q '"directory": "../public"' worker/wrangler.jsonc
           grep -q 'window.location.origin' public/config.js

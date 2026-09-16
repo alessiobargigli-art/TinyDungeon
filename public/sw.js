@@ -1,4 +1,4 @@
-const CACHE = 'tinydungeon-shell-v2';
+const CACHE = 'tinydungeon-shell-v3';
 const SHELL = [
   '/', '/index.html', '/styles.css', '/mobile.css', '/config.js', '/network.js', '/game.js', '/app.js',
   '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'

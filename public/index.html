@@ -4,7 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
   <meta name="theme-color" content="#17151d" />
+  <meta name="application-name" content="TinyDungeon" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>TinyDungeon</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -27,6 +34,9 @@
           <input id="roomCodeInput" class="pixel-input room-code-input" maxlength="8" inputmode="text" placeholder="CODICE" aria-label="Codice stanza" />
           <button id="joinRoomBtn" class="pixel-button secondary" type="button">Entra</button>
         </div>
+
+        <button id="installAppBtn" class="pixel-button install-app hidden" type="button">Installa app</button>
+        <div id="installHint" class="install-hint" role="status"></div>
         <div id="menuStatus" class="menu-status" role="status"></div>
       </div>
     </section>
@@ -57,6 +67,7 @@
         </div>
         <div class="topbar-actions">
           <div id="roomBadge" class="room-badge hidden"></div>
+          <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
           <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
           <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu</button>
         </div>
@@ -97,8 +108,18 @@
     </section>
   </main>
 
+  <div class="rotate-overlay" aria-live="polite">
+    <div class="rotate-card">
+      <div class="rotate-icon">↻</div>
+      <strong>Ruota il telefono</strong>
+      <span>TinyDungeon è pensato per giocare in landscape.</span>
+      <button id="rotateFullscreenBtn" class="pixel-button primary" type="button">Fullscreen landscape</button>
+    </div>
+  </div>
+
   <script src="config.js"></script>
   <script src="network.js"></script>
   <script src="game.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>

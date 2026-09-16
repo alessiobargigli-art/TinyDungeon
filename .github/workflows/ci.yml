@@ -45,7 +45,7 @@ jobs:
           grep -q 'FACILE' public/game-v2.js
           grep -q 'MEDIA' public/game-v2.js
           grep -q 'DIFFICILE' public/game-v2.js
-          grep -q 'tinydungeon-shell-v5' public/sw.js
+          grep -q 'tinydungeon-shell-v6' public/sw.js
           grep -q '"orientation": "landscape"' public/manifest.webmanifest
           grep -q '"directory": "../public"' worker/wrangler.jsonc
           grep -q 'window.location.origin' public/config.js

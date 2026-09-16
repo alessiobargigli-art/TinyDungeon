@@ -15,6 +15,7 @@
 
   const active = new Set();
   let pointerId = null;
+  let dragging = false;
   const maxTravel = 43;
   const deadZone = 12;
 
@@ -47,7 +48,10 @@
         active.add(key);
       }
     }
-    if (label) label.textContent = directionLabels[[...nextKeys].sort((a, b) => ['up', 'right', 'down', 'left'].indexOf(a) - ['up', 'right', 'down', 'left'].indexOf(b)).join(',')] || 'FERMO';
+
+    const order = ['up', 'right', 'down', 'left'];
+    const key = [...nextKeys].sort((a, b) => order.indexOf(a) - order.indexOf(b)).join(',');
+    if (label) label.textContent = directionLabels[key] || 'FERMO';
   }
 
   function neutral() {
@@ -60,8 +64,8 @@
     const rect = base.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-    let dx = clientX - cx;
-    let dy = clientY - cy;
+    const dx = clientX - cx;
+    const dy = clientY - cy;
     const distance = Math.hypot(dx, dy);
 
     if (distance <= deadZone) {
@@ -69,10 +73,9 @@
       return;
     }
 
-    const scale = Math.min(1, maxTravel / distance);
-    const visualX = dx * scale;
-    const visualY = dy * scale;
-    knob.style.transform = `translate3d(${visualX}px, ${visualY}px, 0)`;
+    const maxVisualTravel = Math.min(maxTravel, Math.max(20, rect.width * 0.29));
+    const scale = Math.min(1, maxVisualTravel / distance);
+    knob.style.transform = `translate3d(${dx * scale}px, ${dy * scale}px, 0)`;
     base.classList.add('active');
 
     const angle = Math.atan2(dy, dx);
@@ -90,29 +93,53 @@
     setKeys(dirs[(octant + 8) % 8]);
   }
 
-  base.addEventListener('pointerdown', event => {
+  function start(event) {
+    if (dragging) return;
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+
     event.preventDefault();
     pointerId = event.pointerId;
-    base.setPointerCapture?.(pointerId);
-    updateFromPointer(event.clientX, event.clientY);
-  }, { passive: false });
+    dragging = true;
 
-  base.addEventListener('pointermove', event => {
-    if (event.pointerId !== pointerId) return;
+    try { base.setPointerCapture(pointerId); } catch { /* global listeners keep tracking */ }
+    updateFromPointer(event.clientX, event.clientY);
+  }
+
+  function move(event) {
+    if (!dragging || event.pointerId !== pointerId) return;
     event.preventDefault();
     updateFromPointer(event.clientX, event.clientY);
-  }, { passive: false });
+  }
 
-  const release = event => {
-    if (pointerId !== null && event?.pointerId != null && event.pointerId !== pointerId) return;
+  function release(event) {
+    if (!dragging) return;
+    if (event?.pointerId != null && event.pointerId !== pointerId) return;
+
+    const oldPointerId = pointerId;
+    dragging = false;
     pointerId = null;
-    neutral();
-  };
 
-  base.addEventListener('pointerup', release);
-  base.addEventListener('pointercancel', release);
-  window.addEventListener('blur', () => { pointerId = null; neutral(); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) { pointerId = null; neutral(); } });
+    try {
+      if (oldPointerId != null && base.hasPointerCapture?.(oldPointerId)) base.releasePointerCapture(oldPointerId);
+    } catch { /* already released */ }
+
+    neutral();
+  }
+
+  base.addEventListener('pointerdown', start, { passive: false });
+
+  // Track on window in capture phase: on mobile browsers this remains reliable even
+  // when the finger leaves the joystick element or the DOM hit-target changes.
+  window.addEventListener('pointermove', move, { passive: false, capture: true });
+  window.addEventListener('pointerup', release, { capture: true });
+  window.addEventListener('pointercancel', release, { capture: true });
+
+  base.addEventListener('lostpointercapture', event => {
+    if (dragging && event.pointerId === pointerId) release(event);
+  });
+
+  window.addEventListener('blur', () => release());
+  document.addEventListener('visibilitychange', () => { if (document.hidden) release(); });
 
   neutral();
 })();

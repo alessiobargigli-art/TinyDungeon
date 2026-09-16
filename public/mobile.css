@@ -6,6 +6,9 @@
 .rotate-card strong { color: #f6e7c8; font-size: 24px; }
 .rotate-card span { color: #bfae91; line-height: 1.4; }
 .rotate-icon { color: #f0b35e; font-size: 52px; line-height: 1; }
+.app-version { display: inline-flex; align-items: center; gap: 6px; margin: 2px 0 14px; padding: 5px 8px; border: 1px solid #51445a; border-radius: 5px; background: #18151dcc; color: #92849a; font: 800 9px/1 monospace; letter-spacing: .08em; }
+.app-version strong { color: #f0b35e; font: inherit; }
+.topbar-version { padding: 6px 8px; border: 1px solid #51445a; border-radius: 5px; background: #18151dcc; color: #cdbf9f; font: 800 9px/1 monospace; letter-spacing: .04em; white-space: nowrap; }
 
 /* Menu e lobby devono poter scorrere anche su schermi bassi/orientamento landscape. */
 body:not(.game-playing) {
@@ -94,6 +97,7 @@ body:not(.game-playing) .menu-screen {
   body.game-playing .topbar > div:first-child { display: none; }
   body.game-playing .topbar-actions { gap: 4px; }
   body.game-playing .topbar-actions .pixel-button { padding: 6px 8px; font-size: 10px; opacity: .88; }
+  body.game-playing .topbar-version { font-size: 8px; padding: 5px 6px; opacity: .9; }
   body.game-playing .room-badge { display: none !important; }
   body.game-playing .game-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(calc(100vw - 210px), calc((100dvh - 8px) * 1.7777778)); margin: 0; padding: 4px; border-width: 2px; border-radius: 8px; grid-template-columns: 1fr; gap: 0; box-shadow: none; }
   body.game-playing .canvas-wrap { border-width: 2px; border-radius: 5px; }

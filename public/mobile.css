@@ -7,12 +7,31 @@
 .rotate-card span { color: #bfae91; line-height: 1.4; }
 .rotate-icon { color: #f0b35e; font-size: 52px; line-height: 1; }
 
+/* Menu e lobby devono poter scorrere anche su schermi bassi/orientamento landscape. */
+body:not(.game-playing) {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+body:not(.game-playing) .menu-screen {
+  min-height: 100dvh;
+  height: auto;
+  padding-block: max(12px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-bottom));
+}
+
+@media (max-height: 620px) {
+  body:not(.game-playing) .menu-screen {
+    place-items: start center;
+  }
+}
+
 @media (orientation: portrait) and (pointer: coarse) {
   body.game-playing .rotate-overlay { display: grid; }
 }
 
 @media (orientation: landscape) and (pointer: coarse) {
-  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body.game-playing { width: 100%; height: 100%; overflow: hidden; }
   body.game-playing { padding: 0; background: #0f0d12; }
   body.game-playing .app-shell { width: 100%; height: 100dvh; max-width: none; }
   body.game-playing #gameScreen { position: relative; width: 100%; height: 100dvh; overflow: hidden; }
@@ -33,4 +52,5 @@
 
 @media (display-mode: standalone) {
   body { overscroll-behavior: none; }
+  body:not(.game-playing) { overscroll-behavior-y: contain; }
 }

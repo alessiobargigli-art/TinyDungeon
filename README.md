@@ -23,6 +23,30 @@ Frontend e multiplayer condividono lo stesso origin, quindi non serve configurar
 - Gli altri giocatori inviano input; l'host distribuisce snapshot dello stato.
 - Il link della stanza contiene `?room=CODICE` ed è copiabile dalla lobby.
 
+## Primo dungeon
+
+La vertical slice comprende ora un dungeon completo da **8 stanze**, progettato secondo la regola "una stanza = un problema chiaro":
+
+1. **La leva** — attivare il meccanismo che apre la porta.
+2. **Le tre piastre** — occupazione simultanea; i bot aiutano automaticamente quando presenti.
+3. **Il blocco runico** — spingere un blocco sul sigillo.
+4. **Il ponte** — azionare la leva per attraversare l'acqua.
+5. **La guardia** — combattimento leggero contro slime e scheletri.
+6. **La chiave** — eliminare i custodi e recuperare la Chiave Antica.
+7. **Le tre fiamme** — accendere le torce nell'ordine I, II, III.
+8. **Il guardiano** — miniboss Golem di Pietra, lento e leggibile, poi portale finale.
+
+Il progresso di stanza, puzzle, nemici, chiave, boss e personaggi è incluso negli snapshot multiplayer host-authoritative.
+
+## Mobile / PWA
+
+- gameplay ottimizzato per landscape;
+- fullscreen quando supportato dal browser;
+- installazione PWA su Android e browser compatibili;
+- fallback "Aggiungi alla schermata Home" su iPhone/iPad;
+- icona 16-bit dedicata;
+- service worker con cache shell versionata.
+
 ## Sviluppo locale
 
 ```bash
@@ -51,15 +75,16 @@ Dopo il deploy non è necessario modificare `config.js`: il client usa automatic
 public/
   index.html
   styles.css
+  mobile.css
   config.js
   network.js
   game.js
+  app.js
+  manifest.webmanifest
+  sw.js
+  icons/
 worker/
   package.json
   wrangler.jsonc
   src/index.js
 ```
-
-## Vertical slice
-
-La slice attuale include tre eroi, AI semplice, slime, leva, cancello, forziere, chiave, portale, controlli desktop/touch, menu iniziale e lobby condivisibile.

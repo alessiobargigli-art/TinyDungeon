@@ -12,11 +12,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Check JavaScript syntax
-        run: node --check game.js
+        run: |
+          node --check game.js
+          node --check network.js
+          node --check config.js
+          node --check worker/src/index.js
       - name: Verify required static files
         run: |
           test -s index.html
           test -s styles.css
           test -s game.js
+          test -s network.js
+          test -s config.js
+          test -s worker/wrangler.jsonc
           grep -q 'TinyDungeon' index.html
+          grep -q 'Crea stanza' index.html
           grep -q 'canvas' index.html

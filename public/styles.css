@@ -197,3 +197,41 @@ body.game-menu-open { overflow: hidden; }
   .audio-control-row { gap:4px 10px; }
   .audio-mute { min-width:100px; }
 }
+
+/* Full-screen app shell + two-step mobile-first wizard. */
+html, body { width:100%; min-height:100%; }
+body { padding:0; background:#17151d; }
+.app-shell { width:100%; max-width:none; margin:0; }
+.menu-screen { width:100%; min-height:100dvh; background:#17151d; }
+.menu-panel.wizard-panel { width:min(720px,100%); border:0; border-radius:0; box-shadow:none; background:transparent; padding:clamp(14px,3vh,28px) clamp(18px,5vw,42px); }
+.wizard-brand { text-align:center; margin-bottom:clamp(10px,2vh,20px); }
+.wizard-brand h1 { margin:0; font-size:clamp(34px,8vh,62px); }
+.wizard-step { display:grid; gap:clamp(8px,1.6vh,14px); }
+.wizard-progress { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:2px; }
+.wizard-progress strong,.wizard-progress i { display:grid; place-items:center; width:24px; height:24px; border:2px solid #66556f; border-radius:50%; font:900 11px/1 monospace; font-style:normal; }
+.wizard-progress strong { color:#17151d; background:var(--gold); border-color:var(--gold); }
+.wizard-progress i { color:#8f8195; }
+.wizard-progress span { width:44px; height:2px; background:#4a3f52; }
+.wizard-panel .pixel-input,.wizard-panel select { min-height:44px; }
+.wizard-heroes { margin:0; }
+.wizard-heroes .hero-choice { min-height:64px; }
+.wizard-next { min-height:46px; }
+.wizard-mode-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.wizard-mode { min-height:82px; display:grid; place-items:center; align-content:center; gap:5px; }
+.wizard-mode strong { font-size:15px; }
+.wizard-mode span { color:var(--muted); font-size:10px; }
+.wizard-join { display:grid; grid-template-columns:1fr auto; gap:8px; }
+.wizard-back { justify-self:center; border:0; background:transparent; color:var(--muted); padding:8px 18px; font-weight:900; cursor:pointer; }
+@media (orientation:landscape) and (max-height:650px) and (pointer:coarse) {
+  .menu-panel.wizard-panel { display:block; width:min(760px,92vw); padding:7px 24px; }
+  .wizard-brand { margin-bottom:5px; }
+  .wizard-brand h1 { font-size:28px; }
+  .wizard-step { gap:6px; }
+  .wizard-progress { margin:0; }
+  .wizard-panel .pixel-input,.wizard-panel select { min-height:34px; padding:5px 9px; }
+  .wizard-heroes .hero-choice { min-height:42px; }
+  .wizard-next { min-height:34px; }
+  .wizard-mode { min-height:58px; }
+  .wizard-back { padding:3px 12px; }
+  .menu-status { margin-top:2px; min-height:10px; }
+}

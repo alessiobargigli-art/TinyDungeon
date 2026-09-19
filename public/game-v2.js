@@ -479,10 +479,10 @@
     if (!dx && !dy) return;
     const isHero = state.heroes.includes(entity);
     let nx = entity.x + dx;
-    if (isHero && tryPushBlock(entity, nx, entity.y, dx, 0)) nx = entity.x;
+    if (isHero && !entity.isAI && tryPushBlock(entity, nx, entity.y, dx, 0)) nx = entity.x;
     if (canMoveCircle(nx, entity.y, entity.r) && (!isHero || !heroOverlapsBlock(entity, nx, entity.y))) entity.x = nx;
     let ny = entity.y + dy;
-    if (isHero && tryPushBlock(entity, entity.x, ny, 0, dy)) ny = entity.y;
+    if (isHero && !entity.isAI && tryPushBlock(entity, entity.x, ny, 0, dy)) ny = entity.y;
     if (canMoveCircle(entity.x, ny, entity.r) && (!isHero || !heroOverlapsBlock(entity, entity.x, ny))) entity.y = ny;
   }
 

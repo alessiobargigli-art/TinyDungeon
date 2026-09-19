@@ -239,14 +239,14 @@
         ], enemies:[['bat',460,1080,4,64],['skeleton',780,180,5,42],['slime',1100,1050,5,36],['bat',1420,180,4,65],['skeleton',1740,1050,6,42],['bat',2050,450,4,66]], objective:'Attraversa il dedalo sommerso e risali a nord.' },
         { name:'La rete oscura', type:'maze', world:{width:2520,height:1420}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:2420,y:1320}, extraWalls:[
           {x:360,y:28,w:32,h:560},{x:360,y:760,w:32,h:632},{x:720,y:260,w:32,h:1132},{x:1080,y:28,w:32,h:560},{x:1080,y:760,w:32,h:632},{x:1440,y:260,w:32,h:1132},{x:1800,y:28,w:32,h:560},{x:1800,y:760,w:32,h:632},{x:2160,y:260,w:32,h:900}
-        ], enemies:[['slime',520,650,5,36],['bat',850,180,4,66],['skeleton',1000,1150,6,43],['bat',1280,650,4,67],['skeleton',1640,1150,6,44],['slime',1950,650,5,37],['bat',2300,1100,4,68]], objective:'Trova la via attraverso la rete oscura.' },
+        ], enemies:[['slime',520,650,5,36,{group:'packA',combatRole:'front'}],['bat',850,180,4,66],['skeleton',1000,1150,6,43,{group:'packA',combatRole:'ranged'}],['bat',1280,650,4,67],['skeleton',1640,1150,6,44,{group:'packB',combatRole:'ranged'}],['slime',1950,650,5,37,{group:'packB',combatRole:'front'}],['bat',2300,1100,4,68]], objective:'Trova la via attraverso la rete oscura.' },
         { name:'Il labirinto dei guardiani', type:'maze', world:{width:2840,height:1600}, startSolved:true, spawn:[{x:100,y:800},{x:135,y:835},{x:135,y:765}], exit:{x:2740,y:800}, extraWalls:[
           {x:350,y:28,w:32,h:600},{x:350,y:800,w:32,h:772},{x:700,y:300,w:32,h:1272},{x:1050,y:28,w:32,h:600},{x:1050,y:800,w:32,h:772},{x:1400,y:300,w:32,h:1272},{x:1750,y:28,w:32,h:600},{x:1750,y:800,w:32,h:772},{x:2100,y:300,w:32,h:1272},{x:2450,y:28,w:32,h:600},{x:2450,y:800,w:32,h:772}
-        ], enemies:[['skeleton',520,760,6,44],['bat',850,180,4,68],['slime',900,1350,5,38],['skeleton',1220,760,7,45],['bat',1570,1350,5,69],['skeleton',1920,760,7,45],['slime',2260,1350,6,39],['bat',2600,350,5,70]], objective:'Supera i guardiani e trova l’uscita.' },
+        ], enemies:[['skeleton',520,760,6,44],['bat',850,180,4,68],['slime',900,1350,5,38,{group:'packA',combatRole:'front'}],['skeleton',1220,760,7,45,{group:'packA',combatRole:'ranged'}],['bat',1570,1350,5,69],['skeleton',1920,760,7,45,{group:'packB',combatRole:'ranged'}],['slime',2260,1350,6,39,{group:'packB',combatRole:'front'}],['bat',2600,350,5,70]], objective:'Supera i guardiani e trova l’uscita.' },
         { name:'Il labirinto infinito', type:'maze', world:{width:3200,height:1800}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:3100,y:1700}, extraWalls:[
           {x:320,y:200,w:32,h:1572},{x:640,y:28,w:32,h:1350},{x:960,y:350,w:32,h:1422},{x:1280,y:28,w:32,h:1350},{x:1600,y:350,w:32,h:1422},{x:1920,y:28,w:32,h:1350},{x:2240,y:350,w:32,h:1422},{x:2560,y:28,w:32,h:1350},{x:2880,y:350,w:32,h:1200},
           {x:640,y:900,w:180,h:32},{x:1280,y:650,w:180,h:32},{x:1920,y:1100,w:180,h:32},{x:2560,y:700,w:180,h:32}
-        ], enemies:[['skeleton',470,1500,7,46],['bat',800,180,5,70],['slime',1100,1500,6,40],['skeleton',1450,800,7,47],['bat',1770,1500,5,71],['skeleton',2100,500,8,47],['slime',2420,1500,6,40],['bat',2750,500,5,72],['golem',3020,1550,14,25]], objective:'Attraversa il Labirinto Infinito e raggiungi il portale.' }
+        ], enemies:[['skeleton',470,1500,7,46],['bat',800,180,5,70],['slime',1100,1500,6,40,{group:'packA',combatRole:'front'}],['skeleton',1450,800,7,47,{group:'packA',combatRole:'ranged'}],['bat',1770,1500,5,71],['skeleton',2100,500,8,47,{group:'packB',combatRole:'ranged'}],['slime',2420,1500,6,40,{group:'packB',combatRole:'front'}],['bat',2750,500,5,72],['golem',3020,1550,14,25]], objective:'Attraversa il Labirinto Infinito e raggiungi il portale.' }
       ]
     },
     hard: {
@@ -323,7 +323,7 @@
     const boostedHp = Math.max(2, Math.ceil(hp * hpMultiplier));
     const boostedSpeed = speed * (difficulty === 'hard' ? 1.12 : difficulty === 'medium' ? 1.08 : 1.05);
     const boss = type === 'golem';
-    const elite = !boss && boostedHp >= 7;
+    const elite = !boss && (boostedHp >= 7 || extra.combatRole === 'ranged');
     return { type, x, y, r: defaults.r, hp: boss ? Math.ceil(boostedHp * 2.25) : boostedHp, maxHp: boss ? Math.ceil(boostedHp * 2.25) : boostedHp, speed: boostedSpeed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, boss, elite, specialCd: boss ? 4 + Math.random() * 2 : elite ? 2.5 + Math.random() * 2 : 0, special: '', specialCharge: 0, specialData: null, ...extra };
   }
 
@@ -749,6 +749,18 @@
     for(const hero of state.heroes){if(hero.downTimer>0)continue;const d=dist(enemy,hero);if(d<bestDistance){target=hero;bestDistance=d;}}
     if(!target)return;
     const d=Math.max(1,dist(enemy,target));
+    const ranged = enemy.combatRole === 'ranged' || (enemy.elite && enemy.type !== 'slime');
+    if (ranged && d < 145) {
+      const dx=(enemy.x-target.x)/d,dy=(enemy.y-target.y)/d;
+      tryMove(enemy,dx*enemy.speed*dt*1.15,dy*enemy.speed*dt*1.15);
+      return;
+    }
+    if (ranged && enemy.group) {
+      const front = state.enemies.find(e=>e.alive&&e.group===enemy.group&&e.combatRole==='front');
+      if (front && dist(enemy,front)>230) {
+        const fd=Math.max(1,dist(enemy,front)); tryMove(enemy,((front.x-enemy.x)/fd)*enemy.speed*dt*.65,((front.y-enemy.y)/fd)*enemy.speed*dt*.65);
+      }
+    }
     if(enemy.elite && enemy.specialCd<=0 && d>90){
       if(enemy.type==='skeleton'){
         const dx=(target.x-enemy.x)/d,dy=(target.y-enemy.y)/d;
@@ -818,7 +830,7 @@
       blocks: state.blocks.map(b => ({ x: b.x, y: b.y, solved: b.solved })),
       heroes: state.heroes.map(h => ({ x: h.x, y: h.y, hp: h.hp, dirX: h.dirX, dirY: h.dirY, attackCd: h.attackCd, charge: h.charge, charging: h.charging, hitFlash: h.hitFlash, downTimer: h.downTimer, isAI: h.isAI })),
       projectiles: state.projectiles.map(p => ({ ...p })), effects: state.effects.map(e => ({ ...e })),
-      enemies: state.enemies.map(e => ({ type:e.type,x:e.x,y:e.y,r:e.r,hp:e.hp,maxHp:e.maxHp,speed:e.speed,color:e.color,damage:e.damage,hit:e.hit,attackCd:e.attackCd,alive:e.alive,wobble:e.wobble,boss:e.boss,elite:e.elite,specialCd:e.specialCd,special:e.special,specialCharge:e.specialCharge,specialData:e.specialData }))
+      enemies: state.enemies.map(e => ({ type:e.type,x:e.x,y:e.y,r:e.r,hp:e.hp,maxHp:e.maxHp,speed:e.speed,color:e.color,damage:e.damage,hit:e.hit,attackCd:e.attackCd,alive:e.alive,wobble:e.wobble,boss:e.boss,elite:e.elite,specialCd:e.specialCd,special:e.special,specialCharge:e.specialCharge,specialData:e.specialData,group:e.group,combatRole:e.combatRole }))
     };
   }
 

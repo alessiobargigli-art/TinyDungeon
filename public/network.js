@@ -21,6 +21,7 @@
   let isHost = false;
   let players = [];
   let started = false;
+  let selectedHero = localStorage.getItem('tinyDungeon.hero') || 'warrior';
   let pendingAutoJoin = new URLSearchParams(location.search).get('room') || '';
 
   const storedName = localStorage.getItem('tinyDungeon.nickname');
@@ -64,6 +65,27 @@
     return url.toString();
   }
 
+  const heroLabels = { warrior: 'GUERRIERO', archer: 'ARCIERE', mage: 'MAGO' };
+  function setHeroPicker(containerId, hero, online = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const occupied = new Set(online ? players.filter(p => p.slot !== slot && p.hero).map(p => p.hero) : []);
+    container.querySelectorAll('[data-hero]').forEach(button => {
+      const value = button.dataset.hero;
+      button.classList.toggle('selected', value === hero);
+      button.disabled = occupied.has(value);
+    });
+  }
+  function chooseHero(hero, online = false) {
+    if (!heroLabels[hero]) return;
+    selectedHero = hero; localStorage.setItem('tinyDungeon.hero', hero);
+    setHeroPicker('soloHeroPicker', selectedHero, false);
+    if (online) send({ type: 'hero', hero });
+  }
+  document.getElementById('soloHeroPicker')?.addEventListener('click', e => { const b=e.target.closest('[data-hero]'); if(b) chooseHero(b.dataset.hero); });
+  document.getElementById('coopHeroPicker')?.addEventListener('click', e => { const b=e.target.closest('[data-hero]'); if(b && !b.disabled) chooseHero(b.dataset.hero, true); });
+  setHeroPicker('soloHeroPicker', selectedHero, false);
+
   function renderLobby() {
     roomCodeLabel.textContent = roomCode || '------';
     roomTitle.textContent = isHost ? 'La tua stanza' : 'Stanza condivisa';
@@ -75,14 +97,17 @@
       if (player) {
         const you = player.slot === slot ? ' · TU' : '';
         const host = player.host ? ' · HOST' : '';
-        row.innerHTML = `<span class="slot-name">${escapeHtml(player.name)}</span><span class="slot-meta">EROE ${i + 1}${host}${you}</span>`;
+        row.innerHTML = `<span class="slot-name">${escapeHtml(player.name)}</span><span class="slot-meta">${player.hero ? heroLabels[player.hero] : 'SCEGLI EROE'}${host}${you}</span>`;
       } else {
         row.innerHTML = `<span class="slot-name">Compagno AI</span><span class="slot-meta">EROE ${i + 1} · SLOT LIBERO</span>`;
       }
       playerList.appendChild(row);
     }
     startRoomBtn.classList.toggle('hidden', !isHost);
-    startRoomBtn.disabled = !isHost || !socket || socket.readyState !== WebSocket.OPEN;
+    const me = players.find(p => p.slot === slot);
+    if (me?.hero) selectedHero = me.hero;
+    setHeroPicker('coopHeroPicker', selectedHero, true);
+    startRoomBtn.disabled = !isHost || !socket || socket.readyState !== WebSocket.OPEN || players.some(p => !p.hero);
     lobbyStatus.textContent = `${players.length}/3 giocatori · gli slot liberi saranno gestiti dall'AI`;
   }
 
@@ -165,11 +190,17 @@
         started = false;
         setScreen('lobby');
         renderLobby();
+        send({ type: 'hero', hero: selectedHero });
         break;
       case 'roster':
         players = Array.isArray(message.players) ? message.players : [];
         if (!started) renderLobby();
         adapter?.updateOnlineRoster?.(players);
+        break;
+      case 'hero-rejected':
+        players = Array.isArray(message.players) ? message.players : players;
+        lobbyStatus.textContent = 'Questo eroe è già stato scelto. Scegline un altro.';
+        renderLobby();
         break;
       case 'start':
         players = Array.isArray(message.players) ? message.players : players;
@@ -177,7 +208,7 @@
         setScreen('game');
         roomBadge.textContent = `STANZA ${roomCode} · ${players.length}/3`;
         roomBadge.classList.remove('hidden');
-        adapter?.startOnline?.({ room: roomCode, slot, isHost, players });
+        adapter?.startOnline?.({ room: roomCode, slot, isHost, players, hero: selectedHero });
         break;
       case 'input':
         if (isHost && started) adapter?.receiveRemoteInput?.(message.slot, message.input || {});
@@ -214,7 +245,7 @@
     disconnect(true);
     roomBadge.classList.add('hidden');
     setScreen('game');
-    adapter?.startSolo?.();
+    adapter?.startSolo?.({ hero: selectedHero });
   }
 
   function returnToMenu() {

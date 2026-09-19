@@ -104,3 +104,41 @@ canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; 
   .dpad { position: absolute; left: max(8px, env(safe-area-inset-left)); bottom: 8px; pointer-events: auto; transform: scale(.86); transform-origin: bottom left; }
   .touch-actions { position: absolute; right: max(8px, env(safe-area-inset-right)); bottom: 8px; pointer-events: auto; transform: scale(.86); transform-origin: bottom right; }
 }
+/* HUD pulito: il menu di gioco vive dietro la rotellina. */
+#gameScreen { position: relative; }
+.game-card { grid-template-columns: minmax(0, 1fr); }
+.game-menu-button {
+  position: fixed; z-index: 55; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+  width: 48px; height: 48px; padding: 0; border: 2px solid #75657c; border-radius: 50%;
+  background: #17131bd9; color: #f6e7c8; box-shadow: 0 4px 0 #0d0c10; font-size: 25px; line-height: 1;
+  cursor: pointer; touch-action: manipulation;
+}
+.game-menu-button:active { transform: translateY(2px); box-shadow: 0 2px 0 #0d0c10; }
+.game-menu-overlay {
+  position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; overflow-y: auto;
+  padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+  background: #100f14f7; backdrop-filter: blur(5px);
+}
+.game-menu-panel {
+  position: relative; width: min(680px, 100%); min-height: min(520px, calc(100dvh - 36px));
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  background: linear-gradient(180deg, #2d2635, #1d1922); border: 3px solid #66556f; border-radius: 14px;
+  padding: 34px; box-shadow: inset 0 0 0 2px #18141c;
+}
+.game-menu-close {
+  position: absolute; top: 14px; right: 14px; width: 46px; height: 46px; border: 2px solid #66556f;
+  border-radius: 8px; background: #19161e; color: #f6e7c8; font-size: 30px; cursor: pointer;
+}
+.game-menu-kicker, .game-menu-campaign { color: var(--gold); font: 900 11px/1.2 monospace; letter-spacing: .14em; text-transform: uppercase; }
+.game-menu-panel h2 { margin: 0; padding-right: 54px; font-size: clamp(28px, 6vw, 48px); line-height: 1; }
+.game-menu-campaign { color: var(--accent); margin-top: -8px; }
+.game-menu-section { border-top: 2px solid #413746; padding-top: 14px; }
+.game-menu-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.game-menu-version { color: #92849a; font: 800 10px/1 monospace; letter-spacing: .08em; }
+.game-menu-version strong { color: var(--gold); }
+.game-menu-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+body.game-menu-open { overflow: hidden; }
+@media (max-width: 620px) {
+  .game-menu-panel { padding: 24px 18px; min-height: calc(100dvh - 24px); }
+  .game-menu-controls, .game-menu-actions { grid-template-columns: 1fr; }
+}

@@ -6,6 +6,9 @@
   const fullscreenBtn = document.getElementById('fullscreenBtn');
   const rotateFullscreenBtn = document.getElementById('rotateFullscreenBtn');
   const gameScreen = document.getElementById('gameScreen');
+  const gameMenuBtn = document.getElementById('gameMenuBtn');
+  const gameMenuOverlay = document.getElementById('gameMenuOverlay');
+  const closeGameMenuBtn = document.getElementById('closeGameMenuBtn');
 
   let deferredInstallPrompt = null;
 
@@ -69,6 +72,20 @@
     }
   }
 
+  function setGameMenu(open) {
+    if (!gameMenuOverlay) return;
+    gameMenuOverlay.classList.toggle('hidden', !open);
+    document.body.classList.toggle('game-menu-open', open);
+    gameMenuBtn?.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) closeGameMenuBtn?.focus();
+    else gameMenuBtn?.focus();
+  }
+
+  gameMenuBtn?.addEventListener('click', () => setGameMenu(true));
+  closeGameMenuBtn?.addEventListener('click', () => setGameMenu(false));
+  gameMenuOverlay?.addEventListener('click', event => { if (event.target === gameMenuOverlay) setGameMenu(false); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !gameMenuOverlay?.classList.contains('hidden')) setGameMenu(false); });
+
   fullscreenBtn?.addEventListener('click', toggleFullscreen);
   rotateFullscreenBtn?.addEventListener('click', toggleFullscreen);
 
@@ -78,13 +95,31 @@
   });
 
   function updateGameModeClass() {
-    document.body.classList.toggle('game-playing', gameScreen && !gameScreen.classList.contains('hidden'));
+    const playing = gameScreen && !gameScreen.classList.contains('hidden');
+    document.body.classList.toggle('game-playing', playing);
+    if (!playing) setGameMenu(false);
   }
 
   if (gameScreen) {
     new MutationObserver(updateGameModeClass).observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
   }
   updateGameModeClass();
+
+  // In partita TinyDungeon si comporta come un gioco, non come una pagina web:
+  // niente menu contestuale/long-press o gesture iOS che rubano i tocchi.
+  document.addEventListener('contextmenu', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  });
+  document.addEventListener('gesturestart', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gesturechange', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gestureend', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  }, { passive: false });
+
   updateInstallUi();
 
   if ('serviceWorker' in navigator) {

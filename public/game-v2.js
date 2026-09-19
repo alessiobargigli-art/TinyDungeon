@@ -9,6 +9,8 @@
   const objectiveEl = document.getElementById('objective');
   const messageEl = document.getElementById('message');
   const difficultySelect = document.getElementById('difficultySelect');
+  const gameMenuMapNameEl = document.getElementById('gameMenuMapName');
+  const gameMenuCampaignEl = document.getElementById('gameMenuCampaign');
   const W = canvas.width;
   const H = canvas.height;
   const TILE = 32;
@@ -228,7 +230,13 @@
 
   function allEnemiesDead() { return !state.enemies.length || state.enemies.every(e => !e.alive); }
 
+  function updateGameMenuInfo() {
+    if (gameMenuMapNameEl) gameMenuMapNameEl.textContent = roomConfig().name;
+    if (gameMenuCampaignEl) gameMenuCampaignEl.textContent = `${difficultyLabel()} · STANZA ${state.roomIndex + 1}/${campaign().rooms.length}`;
+  }
+
   function updateObjective() {
+    updateGameMenuInfo();
     if (state.complete) { objectiveEl.textContent = `${difficultyLabel()} completato!`; return; }
     const cfg = roomConfig();
     if (state.roomSolved) { objectiveEl.textContent = state.roomIndex === campaign().rooms.length - 1 ? 'Il portale è aperto. Entra.' : 'La porta è aperta. Raggiungila.'; return; }

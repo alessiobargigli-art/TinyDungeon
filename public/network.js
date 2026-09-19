@@ -13,6 +13,18 @@
   const playerList = document.getElementById('playerList');
   const startRoomBtn = document.getElementById('startRoomBtn');
   const roomBadge = document.getElementById('roomBadge');
+  const installAppBtn = document.getElementById('installAppBtn');
+  const iosInstallGuide = document.getElementById('iosInstallGuide');
+  const iosInstallClose = document.getElementById('iosInstallClose');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  if (isIOS && !isStandalone && installAppBtn) {
+    installAppBtn.classList.remove('hidden');
+    installAppBtn.textContent = 'Installa su iPad';
+    installAppBtn.addEventListener('click', () => iosInstallGuide?.classList.remove('hidden'));
+    iosInstallClose?.addEventListener('click', () => iosInstallGuide?.classList.add('hidden'));
+    iosInstallGuide?.addEventListener('click', event => { if (event.target === iosInstallGuide) iosInstallGuide.classList.add('hidden'); });
+  }
 
   let socket = null;
   let adapter = null;

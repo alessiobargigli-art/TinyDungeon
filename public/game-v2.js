@@ -33,7 +33,7 @@
       const ac = audio(), now = ac.currentTime + delay, osc = ac.createOscillator(), gain = ac.createGain();
       osc.type = type; osc.frequency.setValueAtTime(freq, now);
       if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), now + duration);
-      gain.gain.setValueAtTime(audioMuted ? 0.0001 : Math.max(0.0001, volume * masterVolume), now); gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
+      gain.gain.setValueAtTime(audioMuted ? 0.0001 : Math.max(0.0001, Math.min(1, volume * masterVolume * 1.35)), now); gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
       osc.connect(gain); gain.connect(ac.destination); osc.start(now); osc.stop(now + duration);
     } catch (_) { /* Audio is optional when browser autoplay policy blocks it. */ }
   }
@@ -70,7 +70,7 @@
       dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
       previousDungeonMusicTrack = dungeonMusicTrack;
       dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
-      dungeonMusic.loop = true; dungeonMusic.volume = audioMuted ? 0 : .22 * masterVolume; dungeonMusic.preload = 'auto';
+      dungeonMusic.loop = true; dungeonMusic.volume = audioMuted ? 0 : .12 * masterVolume; dungeonMusic.preload = 'auto';
     }
     dungeonMusic.play().catch(() => {});
     return true;
@@ -99,7 +99,7 @@
   }
 
   function applyAudioSettings() {
-    if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : .22 * masterVolume;
+    if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : .12 * masterVolume;
     if (volumeSlider) volumeSlider.value = String(Math.round(masterVolume * 100));
     if (volumeValue) volumeValue.textContent = `${Math.round(masterVolume * 100)}%`;
     if (muteBtn) {

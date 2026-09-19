@@ -134,8 +134,6 @@ export class Room extends DurableObject {
     if (message.type === 'hero') {
       const hero = ['warrior', 'archer', 'mage'].includes(message.hero) ? message.hero : null;
       if (!hero) return;
-      const occupied = [...this.sessions.values()].some(other => other.id !== session.id && other.hero === hero);
-      if (occupied) { ws.send(JSON.stringify({ type: 'hero-rejected', hero, players: this.roster() })); return; }
       session.hero = hero; this.sessions.set(ws, session); ws.serializeAttachment(session);
       this.broadcast({ type: 'roster', players: this.roster() });
       return;

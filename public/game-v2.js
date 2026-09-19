@@ -217,13 +217,17 @@
 
   function createHero(name, index, palette, speed, cfg) {
     const start = (cfg.spawn || spawn)[index] || spawn[index];
-    return { name, role: index === 0 ? 'warrior' : index === 1 ? 'archer' : 'mage', x: start.x, y: start.y, r: 14, hp: 5, maxHp: 5, speed, palette, dirX: 1, dirY: 0, attackCd: 0, charge: 0, charging: false, hitFlash: 0, downTimer: 0, isAI: true, bob: index * 1.7, _interactHeld: false };
+    const maxHp = index === 2 ? 3 : 5;
+    return { name, role: index === 0 ? 'warrior' : index === 1 ? 'archer' : 'mage', x: start.x, y: start.y, r: 14, hp: maxHp, maxHp, speed, palette, dirX: 1, dirY: 0, attackCd: 0, charge: 0, charging: false, hitFlash: 0, downTimer: 0, isAI: true, bob: index * 1.7, _interactHeld: false };
   }
 
   function createEnemy(spec) {
     const [type, x, y, hp, speed, extra = {}] = spec;
     const defaults = ENEMY_DEFAULTS[type];
-    return { type, x, y, r: defaults.r, hp, maxHp: hp, speed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, ...extra };
+    const hpMultiplier = difficulty === 'hard' ? 1.45 : difficulty === 'medium' ? 1.3 : difficulty === 'explore' ? 1.25 : 1.2;
+    const boostedHp = Math.max(2, Math.ceil(hp * hpMultiplier));
+    const boostedSpeed = speed * (difficulty === 'hard' ? 1.12 : difficulty === 'medium' ? 1.08 : 1.05);
+    return { type, x, y, r: defaults.r, hp: boostedHp, maxHp: boostedHp, speed: boostedSpeed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, ...extra };
   }
 
   function createState(roomIndex = 0, keepKey = false) {
@@ -441,7 +445,7 @@
     const enemy = nearestAliveEnemy(hero, 270);
     if (!enemy) { spawnBurst(hero.x, hero.y - 12, '#75c6ff', 5); return; }
     state.effects.push({ kind: 'lightning', x1: hero.x, y1: hero.y - 8, x2: enemy.x, y2: enemy.y, life: .18 });
-    damageEnemy(enemy, 2, '#8bdcff');
+    damageEnemy(enemy, 1, '#8bdcff');
   }
 
   function projectileHitsObject(p) {

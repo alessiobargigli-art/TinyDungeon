@@ -450,9 +450,31 @@
     changeDungeonMusicForLevel();
   }
 
+  let levelTransitionBusy = false;
   function advanceRoom() {
-    if (state.roomIndex < campaign().rooms.length - 1) enterRoom(state.roomIndex + 1);
-    else {
+    if (levelTransitionBusy) return;
+    if (state.roomIndex < campaign().rooms.length - 1) {
+      levelTransitionBusy = true;
+      const nextIndex = state.roomIndex + 1;
+      if (levelTransitionTitleEl) levelTransitionTitleEl.textContent = 'LIVELLO COMPLETATO';
+      if (levelTransitionNextEl) levelTransitionNextEl.textContent = `Prossimo: ${campaign().rooms[nextIndex].name}`;
+      levelTransitionEl?.classList.remove('fade-in');
+      levelTransitionEl?.classList.add('active');
+
+      const outgoing = dungeonMusic;
+      if (outgoing) fadeMusic(outgoing, outgoing.volume, 0, 500, () => {
+        if (outgoing === dungeonMusic) outgoing.pause();
+      });
+
+      setTimeout(() => {
+        enterRoom(nextIndex);
+        levelTransitionEl?.classList.add('fade-in');
+        setTimeout(() => {
+          levelTransitionEl?.classList.remove('active', 'fade-in');
+          levelTransitionBusy = false;
+        }, 600);
+      }, 900);
+    } else {
       state.complete = true;
       updateObjective();
       showMessage(`${difficultyLabel()} completato ✦`, 4);

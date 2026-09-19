@@ -218,6 +218,37 @@
         ], enemies: [['skeleton',430,620,6,43],['bat',700,150,4,67],['slime',980,760,5,37],['skeleton',1260,520,6,43],['bat',1540,760,4,67],['golem',1690,900,12,24]], objective: 'Attraversa il Grande Labirinto e raggiungi il portale finale.' }
       ]
     },
+    maze: {
+      label: 'LABIRINTI', accent: '#c9a7ff', tints: ['#41394d','#40394f','#3c3a50','#393b51','#373c52','#353d53','#333e54','#303f55'],
+      rooms: [
+        { name:'Il piccolo dedalo', type:'maze', world:{width:1280,height:720}, startSolved:true, spawn:[{x:90,y:100},{x:125,y:135},{x:125,y:70}], exit:{x:1190,y:620}, extraWalls:[
+          {x:280,y:28,w:32,h:330},{x:280,y:500,w:32,h:192},{x:560,y:180,w:32,h:512},{x:840,y:28,w:32,h:390},{x:840,y:550,w:32,h:142}
+        ], enemies:[['slime',430,140,3,33],['bat',700,560,2,58],['skeleton',1030,330,4,38]], objective:'Trova l’uscita del piccolo dedalo.' },
+        { name:'I corridoi storti', type:'maze', world:{width:1520,height:840}, startSolved:true, spawn:[{x:90,y:740},{x:125,y:775},{x:125,y:705}], exit:{x:1430,y:100}, extraWalls:[
+          {x:250,y:160,w:32,h:652},{x:500,y:28,w:32,h:590},{x:750,y:220,w:32,h:592},{x:1000,y:28,w:32,h:590},{x:1250,y:220,w:32,h:592}
+        ], enemies:[['slime',380,650,3,34],['bat',620,170,3,60],['skeleton',870,650,4,39],['bat',1120,170,3,60]], objective:'Risali i corridoi fino alla porta.' },
+        { name:'La spirale', type:'maze', world:{width:1760,height:990}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:1660,y:890}, extraWalls:[
+          {x:260,y:180,w:1200,h:32},{x:260,y:180,w:32,h:610},{x:260,y:758,w:1000,h:32},{x:1228,y:380,w:32,h:410},{x:480,y:380,w:780,h:32},{x:480,y:380,w:32,h:210},{x:480,y:558,w:540,h:32}
+        ], enemies:[['slime',390,300,4,34],['bat',700,680,3,61],['skeleton',940,290,5,40],['bat',1180,680,3,62],['slime',1500,470,4,35]], objective:'Segui la spirale senza perdere la strada.' },
+        { name:'Le sei camere', type:'maze', world:{width:2000,height:1120}, startSolved:true, spawn:[{x:100,y:560},{x:135,y:595},{x:135,y:525}], exit:{x:1900,y:560}, extraWalls:[
+          {x:330,y:28,w:32,h:400},{x:330,y:600,w:32,h:492},{x:660,y:250,w:32,h:842},{x:990,y:28,w:32,h:400},{x:990,y:600,w:32,h:492},{x:1320,y:250,w:32,h:842},{x:1650,y:28,w:32,h:400},{x:1650,y:600,w:32,h:492}
+        ], enemies:[['skeleton',480,520,5,40],['slime',800,850,4,35],['bat',820,180,3,63],['skeleton',1150,520,5,41],['bat',1480,180,3,64],['slime',1800,850,4,36]], objective:'Attraversa le sei camere infestate.' },
+        { name:'Il dedalo sommerso', type:'maze', world:{width:2240,height:1260}, startSolved:true, spawn:[{x:100,y:1160},{x:135,y:1195},{x:135,y:1125}], exit:{x:2140,y:100}, extraWalls:[
+          {x:300,y:220,w:32,h:1012},{x:620,y:28,w:32,h:900},{x:940,y:330,w:32,h:902},{x:1260,y:28,w:32,h:900},{x:1580,y:330,w:32,h:902},{x:1900,y:28,w:32,h:900},
+          {x:300,y:600,w:180,w:180,h:32}
+        ], enemies:[['bat',460,1080,4,64],['skeleton',780,180,5,42],['slime',1100,1050,5,36],['bat',1420,180,4,65],['skeleton',1740,1050,6,42],['bat',2050,450,4,66]], objective:'Attraversa il dedalo sommerso e risali a nord.' },
+        { name:'La rete oscura', type:'maze', world:{width:2520,height:1420}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:2420,y:1320}, extraWalls:[
+          {x:360,y:28,w:32,h:560},{x:360,y:760,w:32,h:632},{x:720,y:260,w:32,h:1132},{x:1080,y:28,w:32,h:560},{x:1080,y:760,w:32,h:632},{x:1440,y:260,w:32,h:1132},{x:1800,y:28,w:32,h:560},{x:1800,y:760,w:32,h:632},{x:2160,y:260,w:32,h:900}
+        ], enemies:[['slime',520,650,5,36],['bat',850,180,4,66],['skeleton',1000,1150,6,43],['bat',1280,650,4,67],['skeleton',1640,1150,6,44],['slime',1950,650,5,37],['bat',2300,1100,4,68]], objective:'Trova la via attraverso la rete oscura.' },
+        { name:'Il labirinto dei guardiani', type:'maze', world:{width:2840,height:1600}, startSolved:true, spawn:[{x:100,y:800},{x:135,y:835},{x:135,y:765}], exit:{x:2740,y:800}, extraWalls:[
+          {x:350,y:28,w:32,h:600},{x:350,y:800,w:32,h:772},{x:700,y:300,w:32,h:1272},{x:1050,y:28,w:32,h:600},{x:1050,y:800,w:32,h:772},{x:1400,y:300,w:32,h:1272},{x:1750,y:28,w:32,h:600},{x:1750,y:800,w:32,h:772},{x:2100,y:300,w:32,h:1272},{x:2450,y:28,w:32,h:600},{x:2450,y:800,w:32,h:772}
+        ], enemies:[['skeleton',520,760,6,44],['bat',850,180,4,68],['slime',900,1350,5,38],['skeleton',1220,760,7,45],['bat',1570,1350,5,69],['skeleton',1920,760,7,45],['slime',2260,1350,6,39],['bat',2600,350,5,70]], objective:'Supera i guardiani e trova l’uscita.' },
+        { name:'Il labirinto infinito', type:'maze', world:{width:3200,height:1800}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:3100,y:1700}, extraWalls:[
+          {x:320,y:200,w:32,h:1572},{x:640,y:28,w:32,h:1350},{x:960,y:350,w:32,h:1422},{x:1280,y:28,w:32,h:1350},{x:1600,y:350,w:32,h:1422},{x:1920,y:28,w:32,h:1350},{x:2240,y:350,w:32,h:1422},{x:2560,y:28,w:32,h:1350},{x:2880,y:350,w:32,h:1200},
+          {x:640,y:900,w:180,h:32},{x:1280,y:650,w:180,h:32},{x:1920,y:1100,w:180,h:32},{x:2560,y:700,w:180,h:32}
+        ], enemies:[['skeleton',470,1500,7,46],['bat',800,180,5,70],['slime',1100,1500,6,40],['skeleton',1450,800,7,47],['bat',1770,1500,5,71],['skeleton',2100,500,8,47],['slime',2420,1500,6,40],['bat',2750,500,5,72],['golem',3020,1550,14,25]], objective:'Attraversa il Labirinto Infinito e raggiungi il portale.' }
+      ]
+    },
     hard: {
       label: 'DIFFICILE', accent: '#d85c68', tints: ['#4d3c47', '#493f55', '#47454f', '#354b58', '#4b393e', '#493f58', '#51403f', '#403236'],
       rooms: [

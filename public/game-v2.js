@@ -103,18 +103,24 @@
 
   function applyAudioSettings() {
     if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : .22 * musicVolume;
-    if (volumeSlider) volumeSlider.value = String(Math.round(masterVolume * 100));
-    if (volumeValue) volumeValue.textContent = `${Math.round(masterVolume * 100)}%`;
+    if (sfxVolumeSlider) sfxVolumeSlider.value = String(Math.round(sfxVolume * 100));
+    if (sfxVolumeValue) sfxVolumeValue.textContent = `${Math.round(sfxVolume * 100)}%`;
+    if (musicVolumeSlider) musicVolumeSlider.value = String(Math.round(musicVolume * 100));
+    if (musicVolumeValue) musicVolumeValue.textContent = `${Math.round(musicVolume * 100)}%`;
     if (muteBtn) {
       muteBtn.textContent = audioMuted ? '🔇 Muto' : '🔊 Audio';
       muteBtn.setAttribute('aria-pressed', audioMuted ? 'true' : 'false');
     }
   }
 
-  volumeSlider?.addEventListener('input', () => {
-    masterVolume = Number(volumeSlider.value) / 100;
-    localStorage.setItem('tinyDungeon.volume', String(masterVolume));
-    if (masterVolume > 0 && audioMuted) { audioMuted = false; localStorage.setItem('tinyDungeon.muted', 'false'); }
+  sfxVolumeSlider?.addEventListener('input', () => {
+    sfxVolume = Number(sfxVolumeSlider.value) / 100;
+    localStorage.setItem('tinyDungeon.sfxVolume', String(sfxVolume));
+    applyAudioSettings();
+  });
+  musicVolumeSlider?.addEventListener('input', () => {
+    musicVolume = Number(musicVolumeSlider.value) / 100;
+    localStorage.setItem('tinyDungeon.musicVolume', String(musicVolume));
     applyAudioSettings();
   });
   muteBtn?.addEventListener('click', () => {

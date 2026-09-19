@@ -79,6 +79,14 @@
     return true;
   }
 
+  function changeDungeonMusicForLevel() {
+    if (!musicManifest?.length) { startDungeonMusic(); return; }
+    if (dungeonMusic) { dungeonMusic.pause(); dungeonMusic.currentTime = 0; }
+    dungeonMusic = null;
+    dungeonMusicTrack = '';
+    playDungeonMusicFromLoadedManifest();
+  }
+
   async function startDungeonMusic() {
     if (playDungeonMusicFromLoadedManifest()) return;
     await loadMusicManifest();
@@ -371,6 +379,7 @@
     applyRosterFlags();
     updateObjective();
     showMessage(`${difficultyLabel()} · STANZA ${index + 1}/${campaign().rooms.length} · ${roomConfig().name}`, 2.2);
+    changeDungeonMusicForLevel();
   }
 
   function advanceRoom() {

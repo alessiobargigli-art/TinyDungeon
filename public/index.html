@@ -101,32 +101,36 @@
           <div class="game-menu-kicker">MAPPA ATTUALE</div>
           <h2 id="gameMenuMapName">TinyDungeon</h2>
           <div id="gameMenuCampaign" class="game-menu-campaign"></div>
-          <div class="game-menu-section">
-            <div class="legend-title">Obiettivo</div>
-            <div id="objective">Supera le otto stanze del dungeon.</div>
+          <div class="game-menu-tabs" role="tablist" aria-label="Menu di gioco">
+            <button class="game-menu-tab active" data-menu-tab="game" role="tab" aria-selected="true" type="button">Gioco</button>
+            <button class="game-menu-tab" data-menu-tab="audio" role="tab" aria-selected="false" type="button">Audio</button>
+            <button class="game-menu-tab" data-menu-tab="system" role="tab" aria-selected="false" type="button">Sistema</button>
           </div>
-          <div class="game-menu-section">
-            <div class="legend-title">Comandi</div>
-            <div class="controls-grid game-menu-controls">
-              <div><strong>Movimento</strong><span>Leva touch · WASD · Frecce</span></div>
-              <div><strong>Attacco</strong><span>ATTACCA · F · Invio</span></div>
-              <div><strong>Interagisci</strong><span>USA · E · Shift</span></div>
+          <div class="game-menu-tab-panel" data-menu-panel="game">
+            <div class="game-menu-section"><div class="legend-title">Obiettivo</div><div id="objective">Supera le otto stanze del dungeon.</div></div>
+            <div class="game-menu-section"><div class="legend-title">Comandi</div>
+              <div class="controls-grid game-menu-controls">
+                <div><strong>Movimento</strong><span>Leva touch · WASD · Frecce</span></div>
+                <div><strong>Attacco</strong><span>ATTACCA · F · Invio</span></div>
+                <div><strong>Interagisci</strong><span>USA · E · Shift</span></div>
+              </div>
+              <div class="difficulty-hint">Guerriero: spada + scudo · Arciere: frecce direzionali · Mago: carica + fulmine auto-target.</div>
             </div>
-            <div class="difficulty-hint">Guerriero: spada + scudo · Arciere: frecce direzionali · Mago: carica + fulmine auto-target.</div>
           </div>
-          <div class="game-menu-section audio-settings">
-            <div class="legend-title">Audio</div>
-            <div class="audio-control-row">
+          <div class="game-menu-tab-panel hidden" data-menu-panel="audio">
+            <div class="game-menu-section audio-settings">
+              <div class="audio-slider-row"><label for="sfxVolumeSlider">SFX <strong id="sfxVolumeValue">100%</strong></label><input id="sfxVolumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" /></div>
+              <div class="audio-slider-row"><label for="musicVolumeSlider">Musica <strong id="musicVolumeValue">100%</strong></label><input id="musicVolumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" /></div>
               <button id="muteBtn" class="pixel-button secondary audio-mute" type="button" aria-pressed="false">🔊 Audio</button>
-              <label for="volumeSlider">Volume <strong id="volumeValue">100%</strong></label>
-              <input id="volumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" />
             </div>
           </div>
-          <div class="game-menu-version">VERSIONE <strong data-app-version>...</strong></div>
-          <div class="game-menu-actions">
-            <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
-            <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
-            <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu principale</button>
+          <div class="game-menu-tab-panel hidden" data-menu-panel="system">
+            <div class="game-menu-version">VERSIONE <strong data-app-version>...</strong></div>
+            <div class="game-menu-actions">
+              <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
+              <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
+              <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu principale</button>
+            </div>
           </div>
         </div>
       </div>

@@ -385,12 +385,16 @@
   function projectileHitsObject(p) {
     if (roomWalls().some(w => collidesCircleRect(p.x, p.y, 3, w))) return true;
     if (state.blocks.some(b => dist(p, b) <= b.r + 3)) return true;
-    return false;
+    const cfg = roomConfig();
+    const props = [...state.levers, ...state.torches];
+    if (cfg.chest) props.push(cfg.chest);
+    if (cfg.bridgeLever) props.push(cfg.bridgeLever);
+    return props.some(o => dist(p, o) <= 15);
   }
 
   function updateCombatEffects(dt) {
     for (const p of state.projectiles) {
-      if (p.stuck > 0) { p.stuck -= dt; continue; }
+      if (p.stuck > 0) { p.stuck -= dt; p.life = p.stuck; continue; }
       p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
       let hit = false;
       for (const enemy of state.enemies) {
@@ -399,7 +403,7 @@
       }
       if (hit || projectileHitsObject(p)) { p.vx = 0; p.vy = 0; p.stuck = .5; }
     }
-    state.projectiles = state.projectiles.filter(p => p.life > 0 && p.stuck > 0 ? p.stuck > 0 : p.life > 0);
+    state.projectiles = state.projectiles.filter(p => p.life > 0);
     for (const e of state.effects) e.life -= dt;
     state.effects = state.effects.filter(e => e.life > 0);
   }
@@ -517,10 +521,17 @@
     if (!target) return;
     const d = Math.max(1, dist(enemy, target));
     if (d > enemy.r + target.r + 3) tryMove(enemy, ((target.x - enemy.x) / d) * enemy.speed * dt, ((target.y - enemy.y) / d) * enemy.speed * dt);
-    else if (enemy.attackCd <= 0) {
+    else {
+      if (target.role === 'warrior') {
+        const towardEnemyX = (enemy.x - target.x) / d, towardEnemyY = (enemy.y - target.y) / d;
+        const facing = target.dirX * towardEnemyX + target.dirY * towardEnemyY;
+        if (facing > .35) tryMove(enemy, towardEnemyX * 7, towardEnemyY * 7);
+      }
+      if (enemy.attackCd <= 0) {
       enemy.attackCd = enemy.type === 'golem' ? 1.55 : 1.25;
       target.hp -= enemy.damage; target.hitFlash = .24; spawnBurst(target.x, target.y, colors.red, enemy.type === 'golem' ? 10 : 6);
       if (target.hp <= 0) target.downTimer = 2.8;
+      }
     }
   }
 

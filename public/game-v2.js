@@ -41,6 +41,42 @@
     else if (name === 'lightning') { tone(1450, .06, 'sawtooth', .035, 180); tone(820, .12, 'square', .025, 90, .025); }
   }
 
+  let dungeonMusic = null;
+  let dungeonMusicTrack = '';
+  let previousDungeonMusicTrack = '';
+  let musicManifest = null;
+
+  async function loadMusicManifest() {
+    if (musicManifest) return musicManifest;
+    try {
+      const response = await fetch('./music/manifest.json', { cache: 'no-cache' });
+      if (!response.ok) throw new Error('manifest');
+      const data = await response.json();
+      musicManifest = Array.isArray(data.tracks) ? data.tracks.filter(name => typeof name === 'string' && name.trim()) : [];
+    } catch (_) { musicManifest = []; }
+    return musicManifest;
+  }
+
+  async function startDungeonMusic() {
+    if (dungeonMusic && dungeonMusicTrack) {
+      dungeonMusic.play().catch(() => {});
+      return;
+    }
+    const tracks = await loadMusicManifest();
+    if (!tracks.length) return;
+    const choices = tracks.length > 1 ? tracks.filter(track => track !== previousDungeonMusicTrack) : tracks;
+    dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
+    previousDungeonMusicTrack = dungeonMusicTrack;
+    dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
+    dungeonMusic.loop = true; dungeonMusic.volume = .22; dungeonMusic.preload = 'auto';
+    dungeonMusic.play().catch(() => {});
+  }
+
+  function stopDungeonMusic() {
+    if (dungeonMusic) { dungeonMusic.pause(); dungeonMusic.currentTime = 0; }
+    dungeonMusic = null; dungeonMusicTrack = '';
+  }
+
   const colors = {
     floorB: '#4d3d49', floorCrack: '#3f323d', wall: '#2d2834', wallTop: '#6c5868', wallDark: '#1b1820',
     gold: '#e8b866', shadow: '#17131a99', water: '#3c6070', rune: '#78c0c1', red: '#c95c68'
@@ -861,11 +897,11 @@
   });
 
   window.TinyDungeonNet?.registerGame({
-    startSolo(info = {}) { chooseDifficulty(difficultySelect?.value || difficulty); mode = 'solo'; localSlot = heroIndex(info.hero); connectedSlots = new Set([0]); playerHeroBySlot = new Map([[0, localSlot]]); resetWorld(); },
+    startSolo(info = {}) { chooseDifficulty(difficultySelect?.value || difficulty); mode = 'solo'; localSlot = heroIndex(info.hero); connectedSlots = new Set([0]); playerHeroBySlot = new Map([[0, localSlot]]); stopDungeonMusic(); resetWorld(); startDungeonMusic(); },
     startOnline(info) {
       const networkSlot = Number(info.slot || 0); mode = info.isHost ? 'host' : 'guest';
       if (info.isHost) chooseDifficulty(difficultySelect?.value || difficulty);
-      setRoster(info.players); localSlot = playerHeroBySlot.get(networkSlot) ?? heroIndex(info.hero); resetWorld();
+      setRoster(info.players); localSlot = playerHeroBySlot.get(networkSlot) ?? heroIndex(info.hero); stopDungeonMusic(); resetWorld(); startDungeonMusic();
       if (mode === 'guest') showMessage(`Giochi come ${state.heroes[localSlot].name}. Attendo la difficoltà dell’host…`);
     },
     updateOnlineRoster(players) { if (mode === 'host' || mode === 'guest') setRoster(players); },
@@ -873,7 +909,7 @@
     receiveSnapshot(data) { if (mode === 'guest') applySnapshot(data); },
     restartOnline() { if (mode === 'guest') resetWorld(); },
     networkClosed() { showMessage('Connessione alla stanza terminata.', 3); },
-    returnToMenu() { mode = 'idle'; keys.clear(); }
+    returnToMenu() { mode = 'idle'; keys.clear(); stopDungeonMusic(); }
   });
 
   requestAnimationFrame(frame);

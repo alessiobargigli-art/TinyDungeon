@@ -251,12 +251,25 @@
   function returnToMenu() {
     disconnect(true);
     setScreen('menu');
+    wizardStep2?.classList.add('hidden'); wizardStep1?.classList.remove('hidden');
     adapter?.returnToMenu?.();
   }
 
   function send(payload) {
     if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(payload));
   }
+
+  const wizardStep1 = document.getElementById('wizardStep1');
+  const wizardStep2 = document.getElementById('wizardStep2');
+  document.getElementById('wizardNextBtn')?.addEventListener('click', () => {
+    saveNickname();
+    wizardStep1?.classList.add('hidden');
+    wizardStep2?.classList.remove('hidden');
+  });
+  document.getElementById('wizardBackBtn')?.addEventListener('click', () => {
+    wizardStep2?.classList.add('hidden');
+    wizardStep1?.classList.remove('hidden');
+  });
 
   document.getElementById('soloBtn').addEventListener('click', startSolo);
   document.getElementById('createRoomBtn').addEventListener('click', createRoom);

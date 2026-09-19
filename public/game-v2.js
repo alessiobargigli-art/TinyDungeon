@@ -333,9 +333,9 @@
       difficulty, humans: 1, roomIndex, roomSolved: !!cfg.startSolved, complete: false, hasKey: keepKey,
       elapsed: 0, roomElapsed: 0, particles: [], projectiles: [], effects: [], timedRemaining: cfg.timed || 0,
       heroes: [
-        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 116, cfg),
-        createHero('Archer', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 126, cfg),
-        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 108, cfg)
+        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 136, cfg),
+        createHero('Archer', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 146, cfg),
+        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 128, cfg)
       ],
       enemies: (cfg.enemies || []).map(createEnemy),
       levers: (cfg.levers || []).map(p => ({ ...p, on: false })),
@@ -466,20 +466,24 @@
         spawnBurst(block.x, block.y, colors.rune, 14);
         showMessage('Un sigillo runico si illumina.');
       }
-      return false;
+      return true;
     }
     return false;
+  }
+
+  function heroOverlapsBlock(hero, x, y) {
+    return roomConfig().type === 'blocks' && state.blocks.some(block => Math.hypot(x - block.x, y - block.y) < hero.r + block.r);
   }
 
   function tryMove(entity, dx, dy) {
     if (!dx && !dy) return;
     const isHero = state.heroes.includes(entity);
     let nx = entity.x + dx;
-    if (isHero && tryPushBlock(entity, nx, entity.y, dx, 0)) nx = entity.x;
-    if (canMoveCircle(nx, entity.y, entity.r)) entity.x = nx;
+    if (isHero && !entity.isAI && tryPushBlock(entity, nx, entity.y, dx, 0)) nx = entity.x;
+    if (canMoveCircle(nx, entity.y, entity.r) && (!isHero || entity.isAI || !heroOverlapsBlock(entity, nx, entity.y))) entity.x = nx;
     let ny = entity.y + dy;
-    if (isHero && tryPushBlock(entity, entity.x, ny, 0, dy)) ny = entity.y;
-    if (canMoveCircle(entity.x, ny, entity.r)) entity.y = ny;
+    if (isHero && !entity.isAI && tryPushBlock(entity, entity.x, ny, 0, dy)) ny = entity.y;
+    if (canMoveCircle(entity.x, ny, entity.r) && (!isHero || entity.isAI || !heroOverlapsBlock(entity, entity.x, ny))) entity.y = ny;
   }
 
   function nearestAliveEnemy(hero, maxRange = Infinity) {
@@ -661,10 +665,10 @@
     }
 
     const leader = nearestHuman(hero);
-    const offset = index === 1 ? { x: -38, y: 38 } : { x: -38, y: -38 };
+    const offset = index === 1 ? { x: -24, y: 24 } : { x: -24, y: -24 };
     const tx = leader.x + offset.x, ty = leader.y + offset.y;
     const d = Math.hypot(tx - hero.x, ty - hero.y);
-    if (d > 30) return { x: (tx - hero.x) / d, y: (ty - hero.y) / d, moving: true, attack: false, interact: false };
+    if (d > 18) return { x: (tx - hero.x) / d, y: (ty - hero.y) / d, moving: true, attack: false, interact: false, catchUp: d > 95 };
     return neutralInput();
   }
 
@@ -690,7 +694,7 @@
       return;
     }
     const input = inputForHero(hero, index);
-    if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; tryMove(hero, input.x * hero.speed * dt, input.y * hero.speed * dt); }
+    if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; const moveSpeed = input.catchUp ? hero.speed * 1.18 : hero.speed; tryMove(hero, input.x * moveSpeed * dt, input.y * moveSpeed * dt); }
     if (input.attack) attack(hero);
     if (input.interact && !hero._interactHeld) interact(hero);
     hero._interactHeld = input.interact;
@@ -744,10 +748,10 @@
     enemy.hit=Math.max(0,enemy.hit-dt); enemy.attackCd=Math.max(0,enemy.attackCd-dt); enemy.wobble+=dt*(enemy.type==='bat'?7:4);
     if (enemy.special) { enemy.specialCharge-=dt; if(enemy.specialCharge<=0) resolveBossSpecial(enemy); return; }
     if (enemy.specialCd>0) enemy.specialCd-=dt;
-    if (enemy.boss && enemy.specialCd<=0) { startBossSpecial(enemy); return; }
     let target=null,bestDistance=enemy.boss?420:enemy.elite?330:195;
     for(const hero of state.heroes){if(hero.downTimer>0)continue;const d=dist(enemy,hero);if(d<bestDistance){target=hero;bestDistance=d;}}
     if(!target)return;
+    if (enemy.boss && enemy.specialCd<=0) { startBossSpecial(enemy); return; }
     const d=Math.max(1,dist(enemy,target));
     const ranged = enemy.combatRole === 'ranged' || (enemy.elite && enemy.type !== 'slime');
     if (ranged && d < 145) {
@@ -1017,6 +1021,10 @@
   function drawEnemy(e) {
     if (!e.alive) return;
     const x = Math.round(e.x), y = Math.round(e.y + Math.sin(e.wobble) * (e.type === 'bat' ? 5 : 2));
+    if (e.boss) {
+      ctx.strokeStyle = '#d7a4ff66'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(Math.round(e.x), Math.round(e.y), 420, 0, Math.PI * 2); ctx.stroke();
+    }
     pxRect(x - e.r, y + e.r * .55, e.r * 2, Math.max(5, e.r * .35), colors.shadow); const body = e.hit > 0 ? '#fff0cc' : e.color;
     if (e.type === 'slime') { pxRect(x - 14, y - 6, 28, 16, body); pxRect(x - 10, y - 13, 20, 9, body); pxRect(x - 7, y - 5, 4, 4, '#22352a'); pxRect(x + 4, y - 5, 4, 4, '#22352a'); }
     else if (e.type === 'skeleton') { pxRect(x - 8, y - 18, 16, 14, body); pxRect(x - 10, y - 5, 20, 16, '#6b6257'); pxRect(x - 5, y - 13, 3, 3, '#29242a'); pxRect(x + 3, y - 13, 3, 3, '#29242a'); }

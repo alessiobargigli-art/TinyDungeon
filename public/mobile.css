@@ -129,3 +129,29 @@ body:not(.game-playing) .menu-screen {
   body.game-playing .game-menu-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   body.game-playing .game-menu-actions { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* Modalità gioco: neutralizza selezione, callout e gesture browser accidentali su iPad/touch. */
+body.game-playing,
+body.game-playing #gameScreen,
+body.game-playing #gameScreen * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+}
+body.game-playing #gameScreen {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+body.game-playing button,
+body.game-playing canvas,
+body.game-playing .touch-panel,
+body.game-playing .game-menu-overlay {
+  touch-action: manipulation;
+}
+body.game-playing canvas,
+body.game-playing .move-joystick,
+body.game-playing .touch-actions,
+body.game-playing .touch-actions button {
+  touch-action: none;
+}

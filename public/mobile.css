@@ -113,3 +113,19 @@ body:not(.game-playing) .menu-screen {
   body { overscroll-behavior: none; }
   body:not(.game-playing) { overscroll-behavior-y: contain; }
 }
+
+@media (orientation: landscape) and (pointer: coarse) {
+  body.game-playing .topbar { display: none; }
+  body.game-playing .game-menu-button {
+    top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right));
+    width: 44px; height: 44px; font-size: 23px; opacity: .9;
+  }
+  body.game-playing .game-menu-overlay { padding: 0; }
+  body.game-playing .game-menu-panel {
+    width: 100%; min-height: 100dvh; border: 0; border-radius: 0; padding: 22px max(70px, env(safe-area-inset-right)) 18px max(70px, env(safe-area-inset-left));
+  }
+  body.game-playing.game-menu-open .touch-panel,
+  body.game-playing.game-menu-open .game-menu-button { display: none; }
+  body.game-playing .game-menu-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  body.game-playing .game-menu-actions { grid-template-columns: repeat(3, 1fr); }
+}

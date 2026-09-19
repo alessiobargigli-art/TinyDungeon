@@ -752,7 +752,7 @@
     const ranged = enemy.combatRole === 'ranged' || (enemy.elite && enemy.type !== 'slime');
     if (ranged && d < 145) {
       const dx=(enemy.x-target.x)/d,dy=(enemy.y-target.y)/d;
-      tryMove(enemy,dx*enemy.speed*dt*1.15,dy*enemy.speed*dt*1.15);
+      tryMove(enemy,dx*enemy.speed*dt*.60,dy*enemy.speed*dt*.60);
       return;
     }
     if (ranged && enemy.group) {

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'v2026.09.19.31';
+  const VERSION = 'v2026.09.19.32';
   window.TINY_DUNGEON_VERSION = VERSION;
 
   const renderVersion = () => {

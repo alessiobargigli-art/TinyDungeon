@@ -275,7 +275,20 @@
         { name: 'Guardiani gemelli', type: 'boss', enemies: [['golem', 625, 190, 16, 27], ['golem', 625, 350, 16, 27], ['bat', 760, 130, 4, 68], ['bat', 760, 410, 4, 68]], objective: 'Sconfiggi i due Guardiani Gemelli.' }
       ]
     }
-  };
+,
+    maze2: {
+      label:'DEDALI ARCANI', accent:'#b88cff', tints:['#443d55','#3d4c55','#4c4054','#3d514d','#51443d','#413d55','#4c3d49','#3c4554'],
+      rooms:[
+        {name:'Il bivio spezzato',type:'arcaneMaze',world:{width:1500,height:900},startSolved:true,requiresKey:false,spawn:[{x:90,y:450},{x:125,y:480},{x:125,y:420}],exit:{x:1400,y:450},extraWalls:[{x:300,y:180,w:32,h:540},{x:300,y:180,w:360,h:32},{x:300,y:688,w:360,h:32},{x:630,y:360,w:32,h:360},{x:850,y:28,w:32,h:310},{x:850,y:520,w:32,h:352},{x:1080,y:180,w:300,h:32},{x:1080,y:688,w:300,h:32}],breakableWalls:[{x:630,y:180,w:32,h:180,hp:3}],enemies:[['slime',520,450,4,34,{group:'a',combatRole:'front'}],['skeleton',560,390,5,39,{group:'a',combatRole:'ranged'}]],objective:'Trova il varco nel dedalo. Alcuni muri possono cedere.'},
+        {name:'Le porte delle rune',type:'arcaneMaze',world:{width:1700,height:1000},startSolved:true,requiresKey:false,spawn:[{x:100,y:120},{x:135,y:150},{x:135,y:90}],exit:{x:1600,y:880},extraWalls:[{x:260,y:260,w:620,h:32},{x:260,y:260,w:32,h:520},{x:520,y:470,w:620,h:32},{x:1108,y:260,w:32,h:232},{x:820,y:740,w:620,h:32},{x:1408,y:470,w:32,h:302}],mazeLevers:[{x:420,y:650,gate:'g1'}],gates:[{id:'g1',x:880,y:260,w:32,h:210}],enemies:[['slime',680,620,4,34,{group:'a',combatRole:'front'}],['skeleton',740,570,5,40,{group:'a',combatRole:'ranged'}],['bat',790,650,5,60,{group:'a',combatRole:'ranged'}]],objective:'Trova la leva che apre il passaggio runico.'},
+        {name:'I cerchi gemelli',type:'arcaneMaze',world:{width:1900,height:1100},startSolved:true,requiresKey:false,spawn:[{x:100,y:550},{x:135,y:580},{x:135,y:520}],exit:{x:1800,y:550},extraWalls:[{x:300,y:180,w:500,h:32},{x:300,y:180,w:32,h:740},{x:300,y:888,w:500,h:32},{x:768,y:180,w:32,h:300},{x:768,y:650,w:32,h:270},{x:1050,y:180,w:520,h:32},{x:1050,y:180,w:32,h:300},{x:1050,y:650,w:32,h:270},{x:1050,y:888,w:520,h:32},{x:1538,y:180,w:32,h:740}],teleports:[{x:520,y:550,to:1},{x:1320,y:550,to:0}],enemies:[['slime',930,500,5,35,{group:'a',combatRole:'front'}],['skeleton',980,430,5,41,{group:'a',combatRole:'ranged'}],['bat',980,570,5,61,{group:'a',combatRole:'ranged'}]],objective:'Usa i portali per attraversare i due anelli.'},
+        {name:'Il muro falso',type:'arcaneMaze',world:{width:2100,height:1200},startSolved:true,requiresKey:false,spawn:[{x:100,y:100},{x:135,y:130},{x:135,y:70}],exit:{x:2000,y:1100},extraWalls:[{x:260,y:220,w:700,h:32},{x:260,y:220,w:32,h:700},{x:500,y:460,w:700,h:32},{x:1168,y:220,w:32,h:262},{x:500,y:900,w:700,h:32},{x:1450,y:220,w:32,h:720},{x:1450,y:900,w:420,h:32},{x:1838,y:500,w:32,h:432}],breakableWalls:[{x:1168,y:482,w:32,h:220,hp:4},{x:1450,y:700,w:32,h:200,hp:4}],enemies:[['slime',850,700,5,35,{group:'a',combatRole:'front'}],['skeleton',910,640,6,42,{group:'a',combatRole:'ranged'}],['slime',1600,650,5,35,{group:'b',combatRole:'front'}],['bat',1660,590,6,62,{group:'b',combatRole:'ranged'}]],objective:'Apriti una scorciatoia abbattendo i muri fragili.'},
+        {name:'La croce arcana',type:'arcaneMaze',world:{width:2300,height:1300},startSolved:true,requiresKey:false,spawn:[{x:100,y:650},{x:135,y:680},{x:135,y:620}],exit:{x:2200,y:650},extraWalls:[{x:350,y:250,w:32,h:800},{x:350,y:250,w:600,h:32},{x:350,y:1018,w:600,h:32},{x:918,y:250,w:32,h:300},{x:918,y:750,w:32,h:300},{x:1250,y:250,w:32,h:300},{x:1250,y:750,w:32,h:300},{x:1250,y:250,w:600,h:32},{x:1250,y:1018,w:600,h:32},{x:1818,y:250,w:32,h:800}],mazeLevers:[{x:650,y:650,gate:'g1'},{x:1550,y:650,gate:'g2'}],gates:[{id:'g1',x:918,y:550,w:32,h:200},{id:'g2',x:1250,y:550,w:32,h:200}],teleports:[{x:650,y:400,to:1},{x:1550,y:900,to:0}],enemies:[['slime',1080,650,6,36,{group:'a',combatRole:'front'}],['skeleton',1130,580,6,42,{group:'a',combatRole:'ranged'}],['bat',1130,720,6,63,{group:'a',combatRole:'ranged'}]],objective:'Leve e portali aprono la croce del dedalo.'},
+        {name:'Le tre imboscate',type:'arcaneMaze',world:{width:2500,height:1450},startSolved:true,requiresKey:false,spawn:[{x:100,y:725},{x:135,y:755},{x:135,y:695}],exit:{x:2400,y:725},extraWalls:[{x:300,y:180,w:32,h:1090},{x:300,y:180,w:550,h:32},{x:300,y:1238,w:550,h:32},{x:818,y:400,w:32,h:870},{x:1100,y:180,w:32,h:800},{x:1100,y:180,w:550,h:32},{x:1618,y:180,w:32,h:800},{x:1900,y:400,w:32,h:870},{x:1900,y:1238,w:400,h:32}],breakableWalls:[{x:818,y:180,w:32,h:220,hp:5}],teleports:[{x:600,y:700,to:1},{x:1450,y:1050,to:0}],enemies:[['slime',650,500,6,36,{group:'a',combatRole:'front'}],['skeleton',710,450,6,43,{group:'a',combatRole:'ranged'}],['slime',1350,650,6,36,{group:'b',combatRole:'front'}],['bat',1410,590,6,64,{group:'b',combatRole:'ranged'}],['slime',2100,800,7,37,{group:'c',combatRole:'front'}],['skeleton',2160,740,7,44,{group:'c',combatRole:'ranged'}],['bat',2160,860,7,65,{group:'c',combatRole:'ranged'}]],objective:'Supera tre squadre coordinate nel grande dedalo.'},
+        {name:'Il nodo impossibile',type:'arcaneMaze',world:{width:2800,height:1600},startSolved:true,requiresKey:false,spawn:[{x:100,y:800},{x:135,y:830},{x:135,y:770}],exit:{x:2700,y:800},extraWalls:[{x:300,y:220,w:700,h:32},{x:300,y:220,w:32,h:1160},{x:300,y:1348,w:700,h:32},{x:968,y:220,w:32,h:430},{x:968,y:850,w:32,h:530},{x:1250,y:420,w:32,h:960},{x:1250,y:420,w:650,h:32},{x:1868,y:220,w:32,h:232},{x:1868,y:650,w:32,h:730},{x:2150,y:220,w:32,h:950},{x:2150,y:220,w:400,h:32}],mazeLevers:[{x:650,y:800,gate:'g1'}],gates:[{id:'g1',x:968,y:650,w:32,h:200}],breakableWalls:[{x:1868,y:452,w:32,h:198,hp:5}],teleports:[{x:1450,y:700,to:1},{x:2350,y:1250,to:0}],enemies:[['slime',1100,1050,7,37,{group:'a',combatRole:'front'}],['skeleton',1160,990,7,44,{group:'a',combatRole:'ranged'}],['bat',1160,1110,7,65,{group:'a',combatRole:'ranged'}],['slime',2050,800,7,38,{group:'b',combatRole:'front'}],['skeleton',2110,740,8,45,{group:'b',combatRole:'ranged'}],['bat',2110,860,8,66,{group:'b',combatRole:'ranged'}]],objective:'Sciogli il nodo usando ogni meccanismo imparato.'},
+        {name:'Il dedalo del custode',type:'arcaneMaze',world:{width:3200,height:1800},startSolved:false,requiresKey:false,spawn:[{x:100,y:900},{x:135,y:930},{x:135,y:870}],exit:{x:3100,y:900},extraWalls:[{x:320,y:220,w:32,h:1360},{x:320,y:220,w:700,h:32},{x:320,y:1548,w:700,h:32},{x:988,y:450,w:32,h:1130},{x:1250,y:220,w:32,h:1050},{x:1250,y:220,w:650,h:32},{x:1868,y:220,w:32,h:1050},{x:2150,y:450,w:32,h:1130},{x:2150,y:1548,w:700,h:32},{x:2818,y:220,w:32,h:1360}],mazeLevers:[{x:650,y:900,gate:'g1'}],gates:[{id:'g1',x:988,y:250,w:32,h:200}],breakableWalls:[{x:1868,y:1270,w:32,h:278,hp:6}],teleports:[{x:1450,y:900,to:1},{x:2450,y:500,to:0}],enemies:[['slime',1550,700,8,38,{group:'a',combatRole:'front'}],['skeleton',1610,640,8,46,{group:'a',combatRole:'ranged'}],['bat',1610,760,8,67,{group:'a',combatRole:'ranged'}],['golem',2650,900,22,27]],objective:'Apri il dedalo e sconfiggi il Custode finale.'}
+      ]
+    }  };
 
   const decorTemplates = [
     [{ x: 120, y: 82 }, { x: 500, y: 82 }, { x: 820, y: 420 }],
@@ -352,6 +365,9 @@
       plates: (cfg.plates || []).map(p => ({ ...p, active: false })),
       blocks: (cfg.blocks || []).map(b => ({ x: b.x, y: b.y, r: 24, target: { x: b.tx, y: b.ty, r: 30 }, solved: false })),
       torches: (cfg.torches || []).map(p => ({ ...p, lit: false })),
+      mazeLevers: (cfg.mazeLevers || []).map(p => ({ ...p, on: false })),
+      breakableWalls: (cfg.breakableWalls || []).map((w,i) => ({ ...w, id:i, hp:w.hp || 3, alive:true })),
+      teleportCooldown: 0,
       torchProgress: 0,
       exit: cfg.exit ? { ...cfg.exit } : { x: 870, y: 270 }
     };
@@ -447,6 +463,11 @@
   function roomWalls() {
     const cfg = roomConfig();
     const walls = [...commonWalls(), ...(cfg.extraWalls || [])];
+    if (state?.breakableWalls) walls.push(...state.breakableWalls.filter(w => w.alive));
+    if (cfg.gates && state?.mazeLevers) for (const gate of cfg.gates) {
+      const lever = state.mazeLevers.find(l => l.gate === gate.id);
+      if (!lever?.on) walls.push(gate);
+    }
     if (cfg.type === 'lever' && cfg.gateX && !state.roomSolved) walls.push({ x: cfg.gateX, y: 28, w: 28, h: H - 56 });
     if (cfg.type === 'blocks') {
       walls.push({ x: 270, y: 28, w: 28, h: 145 }, { x: 270, y: 367, w: 28, h: 145 });
@@ -547,6 +568,16 @@
       const push = enemy.type === 'golem' ? 7 : 15;
       tryMove(enemy, ((enemy.x - hero.x) / d) * push, ((enemy.y - hero.y) / d) * push);
     }
+    if (hero.role === 'warrior') {
+      for (const wall of state.breakableWalls || []) {
+        if (!wall.alive) continue;
+        const cx=clamp(hero.x,wall.x,wall.x+wall.w), cy=clamp(hero.y,wall.y,wall.y+wall.h);
+        if (Math.hypot(hero.x-cx,hero.y-cy)>62) continue;
+        wall.hp--; hitAny=true; spawnBurst(cx,cy,'#b69a78',8);
+        if(wall.hp<=0){wall.alive=false;spawnBurst(cx,cy,'#d0b18b',22);showMessage('CRASH! Il muro cede.');}
+        break;
+      }
+    }
     if (!hitAny) spawnBurst(hero.x + hero.dirX * 28, hero.y + hero.dirY * 28, '#d9c6a4', 3);
   }
 
@@ -584,6 +615,10 @@
           damageEnemy(enemy, 1, '#e7d5a8'); hit = true; break;
         }
       }
+      if (!hit && p.kind !== 'enemyArrow') {
+        const wall=(state.breakableWalls||[]).find(w=>w.alive&&collidesCircleRect(p.x,p.y,4,w));
+        if(wall){wall.hp--;hit=true;spawnBurst(p.x,p.y,'#b69a78',6);if(wall.hp<=0){wall.alive=false;spawnBurst(p.x,p.y,'#d0b18b',18);showMessage('CRASH! Il muro cede.');}}
+      }
       if (hit || projectileHitsObject(p)) { p.vx = 0; p.vy = 0; p.stuck = .5; sfx('arrowHit'); }
     }
     state.projectiles = state.projectiles.filter(p => p.life > 0);
@@ -616,6 +651,13 @@
         lever.on = true;
         showMessage('CLACK! Un sigillo risponde.'); spawnBurst(lever.x, lever.y, colors.gold, 10);
         evaluateRoom(); updateObjective(); return;
+      }
+    }
+
+    if (cfg.type === 'arcaneMaze') {
+      for (const lever of state.mazeLevers || []) {
+        if (lever.on || !near(hero,lever,55)) continue;
+        lever.on=true; showMessage('CLACK! Un passaggio si apre.'); spawnBurst(lever.x,lever.y,colors.gold,12); return;
       }
     }
 
@@ -704,6 +746,11 @@
     }
     const input = inputForHero(hero, index);
     if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; const moveSpeed = input.catchUp ? hero.speed * 1.18 : hero.speed; tryMove(hero, input.x * moveSpeed * dt, input.y * moveSpeed * dt); }
+    if (state.teleportCooldown > 0) state.teleportCooldown=Math.max(0,state.teleportCooldown-dt);
+    if (input.moving && state.teleportCooldown<=0 && roomConfig().teleports?.length) {
+      const ports=roomConfig().teleports;
+      for(let pi=0;pi<ports.length;pi++){const p=ports[pi];if(Math.hypot(hero.x-p.x,hero.y-p.y)<28){const dest=ports[p.to];if(dest){hero.x=dest.x;hero.y=dest.y;state.teleportCooldown=.7;spawnBurst(dest.x,dest.y,'#b88cff',14);}break;}}
+    }
     if (input.attack) attack(hero);
     if (input.interact && !hero._interactHeld) interact(hero);
     hero._interactHeld = input.interact;
@@ -804,6 +851,8 @@
       if (state.blocks.length && state.blocks.every(b => b.solved) && clearOkay) state.roomSolved = true;
     } else if (cfg.type === 'bridge') {
       if (state.bridgeOn && clearOkay) state.roomSolved = true;
+    } else if (cfg.type === 'arcaneMaze') {
+      if (!cfg.startSolved && allEnemiesDead()) state.roomSolved = true;
     } else if (cfg.type === 'battle' || cfg.type === 'boss') {
       if (allEnemiesDead()) state.roomSolved = true;
     } else if (cfg.type === 'torches') {
@@ -839,7 +888,8 @@
     return {
       difficulty, humans: state.humans, roomIndex: state.roomIndex, roomSolved: state.roomSolved, complete: state.complete, hasKey: state.hasKey,
       elapsed: state.elapsed, roomElapsed: state.roomElapsed, timedRemaining: state.timedRemaining, bridgeOn: state.bridgeOn, chestOpen: state.chestOpen, torchProgress: state.torchProgress,
-      levers: state.levers.map(l => ({ on: l.on })), plates: state.plates.map(p => ({ active: p.active })), torches: state.torches.map(t => ({ lit: t.lit })),
+      levers: state.levers.map(l => ({ on: l.on })),
+      mazeLevers: (state.mazeLevers||[]).map(l=>({on:l.on})), breakableWalls:(state.breakableWalls||[]).map(w=>({hp:w.hp,alive:w.alive})), plates: state.plates.map(p => ({ active: p.active })), torches: state.torches.map(t => ({ lit: t.lit })),
       blocks: state.blocks.map(b => ({ x: b.x, y: b.y, solved: b.solved })),
       heroes: state.heroes.map(h => ({ x: h.x, y: h.y, hp: h.hp, dirX: h.dirX, dirY: h.dirY, attackCd: h.attackCd, charge: h.charge, charging: h.charging, hitFlash: h.hitFlash, downTimer: h.downTimer, isAI: h.isAI })),
       projectiles: state.projectiles.map(p => ({ ...p })), effects: state.effects.map(e => ({ ...e })),
@@ -960,6 +1010,11 @@
       for (let y = 48; y < H - 40; y += 32) pxRect(440, y, 120, 3, '#7eb0b555');
       if (state.bridgeOn) { pxRect(425, 220, 150, 102, '#604936'); for (let x = 432; x < 570; x += 20) pxRect(x, 224, 14, 94, '#8f6948'); }
       drawLever(cfg.bridgeLever, state.bridgeOn);
+    }
+    if (cfg.type === 'arcaneMaze') {
+      (state.breakableWalls||[]).filter(w=>w.alive).forEach(w=>{pxRect(w.x,w.y,w.w,w.h,'#70594e');for(let y=w.y+8;y<w.y+w.h;y+=18)pxRect(w.x+4,y,Math.max(4,w.w-8),3,'#a18470');});
+      (state.mazeLevers||[]).forEach(l=>drawLever(l,l.on));
+      (cfg.teleports||[]).forEach((p,i)=>{ctx.strokeStyle=i%2?'#70d7d0':'#b88cff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,22+Math.sin(state.elapsed*4+i)*3,0,Math.PI*2);ctx.stroke();});
     }
     if (cfg.type === 'key') drawChest(cfg.chest, state.chestOpen);
     if (cfg.type === 'torches') {

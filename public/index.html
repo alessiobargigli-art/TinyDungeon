@@ -18,38 +18,40 @@
 <body>
   <main class="app-shell">
     <section id="menuScreen" class="menu-screen">
-      <div class="menu-panel">
-        <div class="eyebrow">16-BIT CO-OP ADVENTURE</div>
-        <h1>TinyDungeon</h1>
-        <div class="app-version">VERSIONE <strong data-app-version>...</strong></div>
-        <p class="menu-copy">Una piccola avventura cooperativa da giocare da soli o insieme.</p>
-
-        <label class="field-label" for="nickname">Nome giocatore</label>
-        <input id="nickname" class="pixel-input" maxlength="18" autocomplete="nickname" placeholder="Avventuriero" />
-
-        <label class="field-label difficulty-label" for="difficultySelect">Difficoltà · 8 stanze per campagna</label>
-        <select id="difficultySelect" class="pixel-input difficulty-select" aria-label="Difficoltà">
-          <option value="easy">Facile · Il primo dungeon</option>
-          <option value="medium">Media · Le rune profonde</option>
-          <option value="hard">Difficile · La cripta gemella</option>
-          <option value="explore">Esplorazione · 8 dungeon scorrevoli</option>
-        </select>
-        <div class="difficulty-hint">Nelle stanze online decide la difficoltà scelta dall’host.</div>
-        <div class="field-label">Scegli il tuo eroe</div>
-        <div id="soloHeroPicker" class="hero-picker" role="radiogroup" aria-label="Personaggio">
-          <button class="hero-choice selected" data-hero="warrior" type="button"><strong>⚔ GUERRIERO</strong><span>Spada + scudo</span></button>
-          <button class="hero-choice" data-hero="archer" type="button"><strong>➶ ARCIERE</strong><span>Frecce a distanza</span></button>
-          <button class="hero-choice" data-hero="mage" type="button"><strong>✦ MAGO</strong><span>Fulmine auto-target</span></button>
+      <div class="menu-panel wizard-panel">
+        <div class="wizard-brand">
+          <h1>TinyDungeon</h1>
+          <div class="app-version">VERSIONE <strong data-app-version>...</strong></div>
         </div>
 
-        <div class="menu-actions">
-          <button id="soloBtn" class="pixel-button primary" type="button">Gioca da solo</button>
-          <button id="createRoomBtn" class="pixel-button" type="button">Crea stanza</button>
+        <div id="wizardStep1" class="wizard-step">
+          <div class="wizard-progress"><strong>1</strong><span></span><i>2</i></div>
+          <input id="nickname" class="pixel-input" maxlength="18" autocomplete="nickname" placeholder="Nome avventuriero" aria-label="Nome giocatore" />
+          <select id="difficultySelect" class="pixel-input difficulty-select" aria-label="Difficoltà">
+            <option value="easy">Facile · Il primo dungeon</option>
+            <option value="medium">Media · Le rune profonde</option>
+            <option value="hard">Difficile · La cripta gemella</option>
+            <option value="explore">Esplorazione · 8 dungeon</option>
+          </select>
+          <div id="soloHeroPicker" class="hero-picker wizard-heroes" role="radiogroup" aria-label="Personaggio">
+            <button class="hero-choice selected" data-hero="warrior" type="button"><strong>⚔ GUERRIERO</strong><span>Spada + scudo</span></button>
+            <button class="hero-choice" data-hero="archer" type="button"><strong>➶ ARCIERE</strong><span>Frecce</span></button>
+            <button class="hero-choice" data-hero="mage" type="button"><strong>✦ MAGO</strong><span>Fulmine</span></button>
+          </div>
+          <button id="wizardNextBtn" class="pixel-button primary wizard-next" type="button">Continua ›</button>
         </div>
 
-        <div class="join-row">
-          <input id="roomCodeInput" class="pixel-input room-code-input" maxlength="8" inputmode="text" placeholder="CODICE" aria-label="Codice stanza" />
-          <button id="joinRoomBtn" class="pixel-button secondary" type="button">Entra</button>
+        <div id="wizardStep2" class="wizard-step hidden">
+          <div class="wizard-progress"><i>1</i><span></span><strong>2</strong></div>
+          <div class="wizard-mode-grid">
+            <button id="soloBtn" class="pixel-button primary wizard-mode" type="button"><strong>Gioca da solo</strong><span>2 compagni AI</span></button>
+            <button id="createRoomBtn" class="pixel-button wizard-mode" type="button"><strong>Crea online</strong><span>Invita fino a 2 giocatori</span></button>
+          </div>
+          <div class="wizard-join">
+            <input id="roomCodeInput" class="pixel-input room-code-input" maxlength="8" inputmode="text" placeholder="CODICE STANZA" aria-label="Codice stanza" />
+            <button id="joinRoomBtn" class="pixel-button secondary" type="button">Entra</button>
+          </div>
+          <button id="wizardBackBtn" class="wizard-back" type="button">‹ Indietro</button>
         </div>
 
         <button id="installAppBtn" class="pixel-button install-app hidden" type="button">Installa app</button>
@@ -99,32 +101,36 @@
           <div class="game-menu-kicker">MAPPA ATTUALE</div>
           <h2 id="gameMenuMapName">TinyDungeon</h2>
           <div id="gameMenuCampaign" class="game-menu-campaign"></div>
-          <div class="game-menu-section">
-            <div class="legend-title">Obiettivo</div>
-            <div id="objective">Supera le otto stanze del dungeon.</div>
+          <div class="game-menu-tabs" role="tablist" aria-label="Menu di gioco">
+            <button class="game-menu-tab active" data-menu-tab="game" role="tab" aria-selected="true" type="button">Gioco</button>
+            <button class="game-menu-tab" data-menu-tab="audio" role="tab" aria-selected="false" type="button">Audio</button>
+            <button class="game-menu-tab" data-menu-tab="system" role="tab" aria-selected="false" type="button">Sistema</button>
           </div>
-          <div class="game-menu-section">
-            <div class="legend-title">Comandi</div>
-            <div class="controls-grid game-menu-controls">
-              <div><strong>Movimento</strong><span>Leva touch · WASD · Frecce</span></div>
-              <div><strong>Attacco</strong><span>ATTACCA · F · Invio</span></div>
-              <div><strong>Interagisci</strong><span>USA · E · Shift</span></div>
+          <div class="game-menu-tab-panel" data-menu-panel="game">
+            <div class="game-menu-section"><div class="legend-title">Obiettivo</div><div id="objective">Supera le otto stanze del dungeon.</div></div>
+            <div class="game-menu-section"><div class="legend-title">Comandi</div>
+              <div class="controls-grid game-menu-controls">
+                <div><strong>Movimento</strong><span>Leva touch · WASD · Frecce</span></div>
+                <div><strong>Attacco</strong><span>ATTACCA · F · Invio</span></div>
+                <div><strong>Interagisci</strong><span>USA · E · Shift</span></div>
+              </div>
+              <div class="difficulty-hint">Guerriero: spada + scudo · Arciere: frecce direzionali · Mago: carica + fulmine auto-target.</div>
             </div>
-            <div class="difficulty-hint">Guerriero: spada + scudo · Arciere: frecce direzionali · Mago: carica + fulmine auto-target.</div>
           </div>
-          <div class="game-menu-section audio-settings">
-            <div class="legend-title">Audio</div>
-            <div class="audio-control-row">
+          <div class="game-menu-tab-panel hidden" data-menu-panel="audio">
+            <div class="game-menu-section audio-settings">
+              <div class="audio-slider-row"><label for="sfxVolumeSlider">SFX <strong id="sfxVolumeValue">100%</strong></label><input id="sfxVolumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" /></div>
+              <div class="audio-slider-row"><label for="musicVolumeSlider">Musica <strong id="musicVolumeValue">100%</strong></label><input id="musicVolumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" /></div>
               <button id="muteBtn" class="pixel-button secondary audio-mute" type="button" aria-pressed="false">🔊 Audio</button>
-              <label for="volumeSlider">Volume <strong id="volumeValue">100%</strong></label>
-              <input id="volumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" />
             </div>
           </div>
-          <div class="game-menu-version">VERSIONE <strong data-app-version>...</strong></div>
-          <div class="game-menu-actions">
-            <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
-            <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
-            <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu principale</button>
+          <div class="game-menu-tab-panel hidden" data-menu-panel="system">
+            <div class="game-menu-version">VERSIONE <strong data-app-version>...</strong></div>
+            <div class="game-menu-actions">
+              <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
+              <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
+              <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu principale</button>
+            </div>
           </div>
         </div>
       </div>

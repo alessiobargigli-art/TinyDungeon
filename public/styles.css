@@ -235,3 +235,19 @@ body { padding:0; background:#17151d; }
   .wizard-back { padding:3px 12px; }
   .menu-status { margin-top:2px; min-height:10px; }
 }
+
+.game-menu-tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; border-bottom:2px solid #413746; padding-bottom:7px; }
+.game-menu-tab { border:0; border-radius:6px; padding:9px 8px; background:#19161e; color:var(--muted); font-weight:900; cursor:pointer; }
+.game-menu-tab.active { background:#355d53; color:var(--ink); box-shadow:inset 0 0 0 2px #6ea98e; }
+.game-menu-tab-panel { min-height:150px; }
+.audio-settings { display:grid; gap:14px; }
+.audio-slider-row { display:grid; grid-template-columns:110px 1fr; align-items:center; gap:12px; }
+.audio-slider-row label { display:flex; justify-content:space-between; gap:8px; color:var(--ink); font-weight:900; }
+.audio-settings .audio-mute { justify-self:start; min-width:120px; }
+@media (orientation:landscape) and (max-height:650px) and (pointer:coarse) {
+  .game-menu-tabs { padding-bottom:4px; }
+  .game-menu-tab { padding:6px; }
+  .game-menu-tab-panel { min-height:105px; }
+  .audio-settings { gap:8px; }
+  .audio-slider-row { grid-template-columns:90px 1fr; gap:8px; }
+}

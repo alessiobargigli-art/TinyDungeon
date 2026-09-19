@@ -776,6 +776,22 @@
     }
     const input = inputForHero(hero, index);
     if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; const moveSpeed = input.catchUp ? hero.speed * 1.18 : hero.speed; tryMove(hero, input.x * moveSpeed * dt, input.y * moveSpeed * dt); }
+
+    // Safety net for boss knockback/teleports: an out-of-bounds hero must never
+    // remain stranded outside the playable world.
+    const world = worldSize();
+    const safeMargin = Math.max(hero.r + 2, 18);
+    if (!Number.isFinite(hero.x) || !Number.isFinite(hero.y) ||
+        hero.x < safeMargin || hero.y < safeMargin ||
+        hero.x > world.width - safeMargin || hero.y > world.height - safeMargin) {
+      const safeSpawn = roomSpawn(index);
+      hero.x = safeSpawn.x; hero.y = safeSpawn.y;
+      hero.dirX = 1; hero.dirY = 0;
+      hero.charging = false; hero.charge = 0;
+      spawnBurst(hero.x, hero.y, '#b88cff', 12);
+      if (!hero.isAI) showMessage('Fuori dal dedalo! Ritorno all’inizio.', 1.6);
+    }
+
     if (state.teleportCooldown > 0) state.teleportCooldown=Math.max(0,state.teleportCooldown-dt);
     if (input.moving && state.teleportCooldown<=0 && roomConfig().teleports?.length) {
       const ports=roomConfig().teleports;

@@ -152,6 +152,7 @@
   let mode = 'idle';
   let localSlot = 0;
   let connectedSlots = new Set([0]);
+  let playerHeroBySlot = new Map([[0, 0]]);
   let remoteInputs = {};
   let difficulty = normalizeDifficulty(difficultySelect?.value || localStorage.getItem('tinyDungeon.difficulty') || 'easy');
   let state = createState(0, false);
@@ -245,11 +246,12 @@
     }
   }
 
+  function heroIndex(role) { return role === 'archer' ? 1 : role === 'mage' ? 2 : 0; }
   function applyRosterFlags() {
     if (!state?.heroes) return;
-    if (mode === 'solo') connectedSlots = new Set([0]);
-    state.humans = connectedSlots.size;
-    state.heroes.forEach((hero, index) => { hero.isAI = !connectedSlots.has(index); });
+    const humanHeroes = new Set(playerHeroBySlot.values());
+    state.humans = humanHeroes.size;
+    state.heroes.forEach((hero, index) => { hero.isAI = !humanHeroes.has(index); });
   }
 
   function allEnemiesDead() { return !state.enemies.length || state.enemies.every(e => !e.alive); }
@@ -510,8 +512,11 @@
 
   function inputForHero(hero, index) {
     if (hero.isAI) return aiInput(hero, index);
-    if (mode === 'solo' || (mode === 'host' && index === localSlot)) return localInput();
-    if (mode === 'host') return remoteInputs[index] || neutralInput();
+    if (index === localSlot) return localInput();
+    if (mode === 'host') {
+      const remoteSlot = [...playerHeroBySlot.entries()].find(([, heroIdx]) => heroIdx === index)?.[0];
+      return remoteInputs[remoteSlot] || neutralInput();
+    }
     return neutralInput();
   }
 
@@ -832,7 +837,8 @@
 
   function setRoster(players) {
     connectedSlots = new Set((players || []).map(p => Number(p.slot)).filter(v => v >= 0 && v <= 2));
-    if (!connectedSlots.size) connectedSlots.add(0); applyRosterFlags();
+    playerHeroBySlot = new Map((players || []).filter(p => p.hero).map(p => [Number(p.slot), heroIndex(p.hero)]));
+    applyRosterFlags();
   }
 
   difficultySelect?.addEventListener('change', () => chooseDifficulty(difficultySelect.value));
@@ -855,11 +861,12 @@
   });
 
   window.TinyDungeonNet?.registerGame({
-    startSolo() { chooseDifficulty(difficultySelect?.value || difficulty); mode = 'solo'; localSlot = 0; connectedSlots = new Set([0]); resetWorld(); },
+    startSolo(info = {}) { chooseDifficulty(difficultySelect?.value || difficulty); mode = 'solo'; localSlot = heroIndex(info.hero); connectedSlots = new Set([0]); playerHeroBySlot = new Map([[0, localSlot]]); resetWorld(); },
     startOnline(info) {
-      localSlot = Number(info.slot || 0); mode = info.isHost ? 'host' : 'guest';
+      const networkSlot = Number(info.slot || 0); mode = info.isHost ? 'host' : 'guest';
       if (info.isHost) chooseDifficulty(difficultySelect?.value || difficulty);
-      setRoster(info.players); resetWorld(); if (mode === 'guest') showMessage(`Sei l’eroe ${localSlot + 1}. Attendo la difficoltà dell’host…`);
+      setRoster(info.players); localSlot = playerHeroBySlot.get(networkSlot) ?? heroIndex(info.hero); resetWorld();
+      if (mode === 'guest') showMessage(`Giochi come ${state.heroes[localSlot].name}. Attendo la difficoltà dell’host…`);
     },
     updateOnlineRoster(players) { if (mode === 'host' || mode === 'guest') setRoster(players); },
     receiveRemoteInput(slotValue, input) { if (mode === 'host') remoteInputs[Number(slotValue)] = { ...neutralInput(), ...input }; },

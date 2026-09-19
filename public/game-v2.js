@@ -8,6 +8,9 @@
   const restartBtn = document.getElementById('restartBtn');
   const objectiveEl = document.getElementById('objective');
   const messageEl = document.getElementById('message');
+  const levelTransitionEl = document.getElementById('levelTransition');
+  const levelTransitionTitleEl = document.getElementById('levelTransitionTitle');
+  const levelTransitionNextEl = document.getElementById('levelTransitionNext');
   const difficultySelect = document.getElementById('difficultySelect');
   const gameMenuMapNameEl = document.getElementById('gameMenuMapName');
   const gameMenuCampaignEl = document.getElementById('gameMenuCampaign');
@@ -75,7 +78,42 @@
     return musicManifest;
   }
 
-  function playDungeonMusicFromLoadedManifest() {
+  function targetMusicVolume() { return audioMuted ? 0 : musicVolume * musicVolume; }
+
+  function ensureMusicPlaying(audioEl, attempts = 3) {
+    if (!audioEl) return;
+    const tryPlay = () => {
+      if (audioEl !== dungeonMusic || audioMuted) return;
+      const promise = audioEl.play();
+      if (promise?.catch) promise.catch(() => {});
+    };
+    tryPlay();
+    audioEl.addEventListener('canplay', tryPlay, { once:true });
+    audioEl.addEventListener('loadeddata', tryPlay, { once:true });
+    if (attempts > 0) {
+      setTimeout(() => {
+        if (audioEl === dungeonMusic && audioEl.paused && !audioMuted) {
+          tryPlay();
+          if (attempts > 1) setTimeout(tryPlay, 700);
+        }
+      }, 450);
+    }
+  }
+
+  function fadeMusic(audioEl, from, to, duration = 500, onDone = null) {
+    if (!audioEl) { onDone?.(); return; }
+    const started = performance.now();
+    audioEl.volume = Math.max(0, Math.min(1, from));
+    const step = now => {
+      if (audioEl !== dungeonMusic && to > from) return;
+      const t = Math.min(1, (now - started) / duration);
+      audioEl.volume = Math.max(0, Math.min(1, from + (to - from) * t));
+      if (t < 1) requestAnimationFrame(step); else onDone?.();
+    };
+    requestAnimationFrame(step);
+  }
+
+  function playDungeonMusicFromLoadedManifest(fadeIn = false) {
     const tracks = musicManifest || [];
     if (!tracks.length) return false;
     if (!dungeonMusic) {
@@ -83,18 +121,22 @@
       dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
       previousDungeonMusicTrack = dungeonMusicTrack;
       dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
-      dungeonMusic.loop = true; dungeonMusic.volume = audioMuted ? 0 : musicVolume * musicVolume; dungeonMusic.preload = 'auto';
+      dungeonMusic.loop = true; dungeonMusic.preload = 'auto';
+      dungeonMusic.volume = fadeIn ? 0 : targetMusicVolume();
     }
-    dungeonMusic.play().catch(() => {});
+    const current = dungeonMusic;
+    ensureMusicPlaying(current);
+    if (fadeIn && !audioMuted) fadeMusic(current, 0, targetMusicVolume(), 750);
     return true;
   }
 
-  function changeDungeonMusicForLevel() {
-    if (!musicManifest?.length) { startDungeonMusic(); return; }
-    if (dungeonMusic) { dungeonMusic.pause(); dungeonMusic.currentTime = 0; }
+  function changeDungeonMusicForLevel(fadeIn = true) {
+    const oldMusic = dungeonMusic;
+    if (oldMusic) { oldMusic.pause(); oldMusic.currentTime = 0; }
     dungeonMusic = null;
     dungeonMusicTrack = '';
-    playDungeonMusicFromLoadedManifest();
+    if (!musicManifest?.length) { startDungeonMusic(); return; }
+    playDungeonMusicFromLoadedManifest(fadeIn);
   }
 
   async function startDungeonMusic() {
@@ -120,7 +162,7 @@
   }
 
   function applyAudioSettings() {
-    if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : musicVolume * musicVolume;
+    if (dungeonMusic) dungeonMusic.volume = targetMusicVolume();
     if (sfxVolumeSlider) sfxVolumeSlider.value = String(Math.round(sfxVolume * 100));
     if (sfxVolumeValue) sfxVolumeValue.textContent = `${Math.round(sfxVolume * 100)}%`;
     if (musicVolumeSlider) musicVolumeSlider.value = String(Math.round(musicVolume * 100));

@@ -89,7 +89,7 @@ export class Room extends DurableObject {
 
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
-    const attachment = { id: crypto.randomUUID(), name, slot, host };
+    const attachment = { id: crypto.randomUUID(), name, slot, host, hero: null };
     this.ctx.acceptWebSocket(server);
     server.serializeAttachment(attachment);
     this.sessions.set(server, attachment);
@@ -107,7 +107,7 @@ export class Room extends DurableObject {
 
   roster() {
     return [...this.sessions.values()]
-      .map(({ name, slot, host }) => ({ name, slot, host }))
+      .map(({ name, slot, host, hero }) => ({ name, slot, host, hero: hero || null }))
       .sort((a, b) => a.slot - b.slot);
   }
 
@@ -131,7 +131,19 @@ export class Room extends DurableObject {
     let message;
     try { message = JSON.parse(raw); } catch { return; }
 
+    if (message.type === 'hero') {
+      const hero = ['warrior', 'archer', 'mage'].includes(message.hero) ? message.hero : null;
+      if (!hero) return;
+      const occupied = [...this.sessions.values()].some(other => other.id !== session.id && other.hero === hero);
+      if (occupied) { ws.send(JSON.stringify({ type: 'hero-rejected', hero, players: this.roster() })); return; }
+      session.hero = hero; this.sessions.set(ws, session); ws.serializeAttachment(session);
+      this.broadcast({ type: 'roster', players: this.roster() });
+      return;
+    }
+
     if (message.type === 'start' && session.host) {
+      const roster = this.roster();
+      if (roster.some(player => !player.hero)) { ws.send(JSON.stringify({ type: 'error', message: 'Ogni giocatore deve scegliere un eroe.' })); return; }
       await this.ctx.storage.put('started', true);
       this.broadcast({ type: 'start', players: this.roster() });
       return;

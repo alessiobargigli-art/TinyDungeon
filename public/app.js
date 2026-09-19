@@ -104,6 +104,22 @@
     new MutationObserver(updateGameModeClass).observe(gameScreen, { attributes: true, attributeFilter: ['class'] });
   }
   updateGameModeClass();
+
+  // In partita TinyDungeon si comporta come un gioco, non come una pagina web:
+  // niente menu contestuale/long-press o gesture iOS che rubano i tocchi.
+  document.addEventListener('contextmenu', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  });
+  document.addEventListener('gesturestart', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gesturechange', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gestureend', event => {
+    if (document.body.classList.contains('game-playing')) event.preventDefault();
+  }, { passive: false });
+
   updateInstallUi();
 
   if ('serviceWorker' in navigator) {

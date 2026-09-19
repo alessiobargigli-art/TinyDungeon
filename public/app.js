@@ -28,7 +28,16 @@
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    updateInstallUi();
+    // iOS Safari still performs page zoom for multi-touch even when descendants use
+  // touch-action:none. During gameplay consume multi-touch at document level.
+  document.addEventListener('touchstart', event => {
+    if (document.body.classList.contains('game-playing') && event.touches.length > 1) event.preventDefault();
+  }, { passive:false, capture:true });
+  document.addEventListener('touchmove', event => {
+    if (document.body.classList.contains('game-playing') && event.touches.length > 1) event.preventDefault();
+  }, { passive:false, capture:true });
+
+  updateInstallUi();
   });
 
   window.addEventListener('appinstalled', () => {

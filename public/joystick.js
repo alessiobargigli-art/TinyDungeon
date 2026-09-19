@@ -16,6 +16,7 @@
   const active = new Set();
   let pointerId = null;
   let dragging = false;
+  let lastPointerAt = 0;
   const maxTravel = 43;
   const deadZone = 12;
 
@@ -130,6 +131,7 @@
     event.preventDefault();
     pointerId = event.pointerId;
     dragging = true;
+    lastPointerAt = performance.now();
 
     // Floating joystick: every new touch on the left half becomes the new center.
     placeBase(event.clientX, event.clientY);
@@ -141,6 +143,7 @@
   function move(event) {
     if (!dragging || event.pointerId !== pointerId) return;
     event.preventDefault();
+    lastPointerAt = performance.now();
     updateFromPointer(event.clientX, event.clientY);
   }
 
@@ -168,6 +171,21 @@
   base.addEventListener('lostpointercapture', event => {
     if (dragging && event.pointerId === pointerId) release(event);
   });
+
+  // Safari/iPad can cancel a captured pointer when a system gesture starts. Always reset
+  // the virtual stick so the next finger can immediately claim it again.
+  window.addEventListener('touchstart', event => {
+    if (!document.body.classList.contains('game-playing') || event.touches.length !== 1) return;
+    const t = event.touches[0];
+    if (dragging && performance.now() - lastPointerAt > 750) release();
+    if (!dragging && t.clientX <= window.innerWidth * .52 && !event.target.closest?.('button,input,select,a,.topbar,.rotate-overlay')) {
+      event.preventDefault();
+      placeBase(t.clientX, t.clientY);
+    }
+  }, { passive:false, capture:true });
+  window.addEventListener('touchcancel', () => release(), { capture:true });
+  window.addEventListener('pagehide', () => release());
+  window.addEventListener('pageshow', () => release());
 
   window.addEventListener('blur', () => release());
   document.addEventListener('visibilitychange', () => { if (document.hidden) release(); });

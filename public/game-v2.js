@@ -561,8 +561,14 @@
     }
     if (hero.role === 'archer') {
       hero.attackCd = .42; sfx('bow');
-      const len = Math.hypot(hero.dirX, hero.dirY) || 1;
-      const dx = hero.dirX / len, dy = hero.dirY / len;
+      const target = nearestAliveEnemy(hero, 320);
+      let dx = hero.dirX, dy = hero.dirY;
+      if (target) {
+        dx = target.x - hero.x; dy = target.y - hero.y;
+      }
+      const len = Math.hypot(dx, dy) || 1;
+      dx /= len; dy /= len;
+      if (target) { hero.dirX = dx; hero.dirY = dy; }
       state.projectiles.push({ kind: 'arrow', x: hero.x + dx * 22, y: hero.y + dy * 22, vx: dx * 430, vy: dy * 430, dirX: dx, dirY: dy, life: 2.2, stuck: 0 });
       return;
     }

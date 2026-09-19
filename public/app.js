@@ -2,6 +2,7 @@
   'use strict';
 
   const installBtn = document.getElementById('installAppBtn');
+  const refreshAppBtn = document.getElementById('refreshAppBtn');
   const installHint = document.getElementById('installHint');
   const fullscreenBtn = document.getElementById('fullscreenBtn');
   const rotateFullscreenBtn = document.getElementById('rotateFullscreenBtn');
@@ -36,6 +37,24 @@
   document.addEventListener('touchmove', event => {
     if (document.body.classList.contains('game-playing') && event.touches.length > 1) event.preventDefault();
   }, { passive:false, capture:true });
+
+  refreshAppBtn?.addEventListener('click', async () => {
+    refreshAppBtn.disabled = true;
+    refreshAppBtn.textContent = '↻ Aggiornamento…';
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map(registration => registration.update()));
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter(key => key.startsWith('tinydungeon-')).map(key => caches.delete(key)));
+      }
+    } catch (_) { /* Reload still gives the network-first service worker a chance to update. */ }
+    const url = new URL(location.href);
+    url.searchParams.set('_refresh', Date.now().toString());
+    location.replace(url.toString());
+  });
 
   updateInstallUi();
   });

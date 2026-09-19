@@ -42,6 +42,15 @@
           <button class="hero-choice" data-hero="mage" type="button"><strong>✦ MAGO</strong><span>Fulmine auto-target</span></button>
         </div>
 
+        <div class="menu-audio-settings">
+          <div class="field-label">Audio</div>
+          <div class="audio-control-row">
+            <button id="menuMuteBtn" class="pixel-button secondary audio-mute" type="button" aria-pressed="false">🔊 Audio</button>
+            <label for="menuVolumeSlider">Volume <strong id="menuVolumeValue">100%</strong></label>
+            <input id="menuVolumeSlider" class="volume-slider" type="range" min="0" max="100" step="5" value="100" />
+          </div>
+        </div>
+
         <div class="menu-actions">
           <button id="soloBtn" class="pixel-button primary" type="button">Gioca da solo</button>
           <button id="createRoomBtn" class="pixel-button" type="button">Crea stanza</button>

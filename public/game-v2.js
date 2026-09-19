@@ -364,9 +364,9 @@
       difficulty, humans: 1, roomIndex, roomSolved: !!cfg.startSolved, complete: false, hasKey: keepKey,
       elapsed: 0, roomElapsed: 0, particles: [], projectiles: [], effects: [], timedRemaining: cfg.timed || 0,
       heroes: [
-        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 136, cfg),
-        createHero('Archer', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 146, cfg),
-        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 128, cfg)
+        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 160, cfg),
+        createHero('Archer', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 172, cfg),
+        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 150, cfg)
       ],
       enemies: (cfg.enemies || []).map(createEnemy),
       levers: (cfg.levers || []).map(p => ({ ...p, on: false })),

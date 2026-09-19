@@ -17,6 +17,11 @@
   const keys = new Set();
   const touch = { up: false, down: false, left: false, right: false, attack: false, interact: false };
 
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeValue = document.getElementById('volumeValue');
+  const muteBtn = document.getElementById('muteBtn');
+  let masterVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.volume') ?? 1)));
+  let audioMuted = localStorage.getItem('tinyDungeon.muted') === 'true';
   let audioCtx = null;
   function audio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -28,7 +33,7 @@
       const ac = audio(), now = ac.currentTime + delay, osc = ac.createOscillator(), gain = ac.createGain();
       osc.type = type; osc.frequency.setValueAtTime(freq, now);
       if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), now + duration);
-      gain.gain.setValueAtTime(volume, now); gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
+      gain.gain.setValueAtTime(audioMuted ? 0.0001 : Math.max(0.0001, volume * masterVolume), now); gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
       osc.connect(gain); gain.connect(ac.destination); osc.start(now); osc.stop(now + duration);
     } catch (_) { /* Audio is optional when browser autoplay policy blocks it. */ }
   }
@@ -57,25 +62,65 @@
     return musicManifest;
   }
 
-  async function startDungeonMusic() {
-    if (dungeonMusic && dungeonMusicTrack) {
-      dungeonMusic.play().catch(() => {});
-      return;
+  function playDungeonMusicFromLoadedManifest() {
+    const tracks = musicManifest || [];
+    if (!tracks.length) return false;
+    if (!dungeonMusic) {
+      const choices = tracks.length > 1 ? tracks.filter(track => track !== previousDungeonMusicTrack) : tracks;
+      dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
+      previousDungeonMusicTrack = dungeonMusicTrack;
+      dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
+      dungeonMusic.loop = true; dungeonMusic.volume = audioMuted ? 0 : .22 * masterVolume; dungeonMusic.preload = 'auto';
     }
-    const tracks = await loadMusicManifest();
-    if (!tracks.length) return;
-    const choices = tracks.length > 1 ? tracks.filter(track => track !== previousDungeonMusicTrack) : tracks;
-    dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
-    previousDungeonMusicTrack = dungeonMusicTrack;
-    dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
-    dungeonMusic.loop = true; dungeonMusic.volume = .22; dungeonMusic.preload = 'auto';
     dungeonMusic.play().catch(() => {});
+    return true;
   }
+
+  async function startDungeonMusic() {
+    if (playDungeonMusicFromLoadedManifest()) return;
+    await loadMusicManifest();
+    playDungeonMusicFromLoadedManifest();
+  }
+
+  function unlockDungeonAudio() {
+    // Mobile Safari/Chrome require media playback to start inside a user gesture.
+    // The manifest is preloaded while the menu is visible, so this call stays synchronous.
+    playDungeonMusicFromLoadedManifest();
+    try { audio(); } catch (_) { /* optional WebAudio unlock */ }
+  }
+
+  loadMusicManifest();
+  document.addEventListener('pointerdown', unlockDungeonAudio, { once: true, passive: true });
+  document.addEventListener('keydown', unlockDungeonAudio, { once: true });
 
   function stopDungeonMusic() {
     if (dungeonMusic) { dungeonMusic.pause(); dungeonMusic.currentTime = 0; }
     dungeonMusic = null; dungeonMusicTrack = '';
   }
+
+  function applyAudioSettings() {
+    if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : .22 * masterVolume;
+    if (volumeSlider) volumeSlider.value = String(Math.round(masterVolume * 100));
+    if (volumeValue) volumeValue.textContent = `${Math.round(masterVolume * 100)}%`;
+    if (muteBtn) {
+      muteBtn.textContent = audioMuted ? '🔇 Muto' : '🔊 Audio';
+      muteBtn.setAttribute('aria-pressed', audioMuted ? 'true' : 'false');
+    }
+  }
+
+  volumeSlider?.addEventListener('input', () => {
+    masterVolume = Number(volumeSlider.value) / 100;
+    localStorage.setItem('tinyDungeon.volume', String(masterVolume));
+    if (masterVolume > 0 && audioMuted) { audioMuted = false; localStorage.setItem('tinyDungeon.muted', 'false'); }
+    applyAudioSettings();
+  });
+  muteBtn?.addEventListener('click', () => {
+    audioMuted = !audioMuted;
+    localStorage.setItem('tinyDungeon.muted', String(audioMuted));
+    applyAudioSettings();
+    if (!audioMuted) unlockDungeonAudio();
+  });
+  applyAudioSettings();
 
   const colors = {
     floorB: '#4d3d49', floorCrack: '#3f323d', wall: '#2d2834', wallTop: '#6c5868', wallDark: '#1b1820',
@@ -217,13 +262,17 @@
 
   function createHero(name, index, palette, speed, cfg) {
     const start = (cfg.spawn || spawn)[index] || spawn[index];
-    return { name, role: index === 0 ? 'warrior' : index === 1 ? 'archer' : 'mage', x: start.x, y: start.y, r: 14, hp: 5, maxHp: 5, speed, palette, dirX: 1, dirY: 0, attackCd: 0, charge: 0, charging: false, hitFlash: 0, downTimer: 0, isAI: true, bob: index * 1.7, _interactHeld: false };
+    const maxHp = index === 2 ? 3 : 5;
+    return { name, role: index === 0 ? 'warrior' : index === 1 ? 'archer' : 'mage', x: start.x, y: start.y, r: 14, hp: maxHp, maxHp, speed, palette, dirX: 1, dirY: 0, attackCd: 0, charge: 0, charging: false, hitFlash: 0, downTimer: 0, isAI: true, bob: index * 1.7, _interactHeld: false };
   }
 
   function createEnemy(spec) {
     const [type, x, y, hp, speed, extra = {}] = spec;
     const defaults = ENEMY_DEFAULTS[type];
-    return { type, x, y, r: defaults.r, hp, maxHp: hp, speed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, ...extra };
+    const hpMultiplier = difficulty === 'hard' ? 1.45 : difficulty === 'medium' ? 1.3 : difficulty === 'explore' ? 1.25 : 1.2;
+    const boostedHp = Math.max(2, Math.ceil(hp * hpMultiplier));
+    const boostedSpeed = speed * (difficulty === 'hard' ? 1.12 : difficulty === 'medium' ? 1.08 : 1.05);
+    return { type, x, y, r: defaults.r, hp: boostedHp, maxHp: boostedHp, speed: boostedSpeed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, ...extra };
   }
 
   function createState(roomIndex = 0, keepKey = false) {
@@ -441,7 +490,7 @@
     const enemy = nearestAliveEnemy(hero, 270);
     if (!enemy) { spawnBurst(hero.x, hero.y - 12, '#75c6ff', 5); return; }
     state.effects.push({ kind: 'lightning', x1: hero.x, y1: hero.y - 8, x2: enemy.x, y2: enemy.y, life: .18 });
-    damageEnemy(enemy, 2, '#8bdcff');
+    damageEnemy(enemy, 1, '#8bdcff');
   }
 
   function projectileHitsObject(p) {

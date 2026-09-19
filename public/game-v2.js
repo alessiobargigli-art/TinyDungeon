@@ -17,6 +17,30 @@
   const keys = new Set();
   const touch = { up: false, down: false, left: false, right: false, attack: false, interact: false };
 
+  let audioCtx = null;
+  function audio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function tone(freq, duration, type = 'square', volume = .035, slideTo = null, delay = 0) {
+    try {
+      const ac = audio(), now = ac.currentTime + delay, osc = ac.createOscillator(), gain = ac.createGain();
+      osc.type = type; osc.frequency.setValueAtTime(freq, now);
+      if (slideTo) osc.frequency.exponentialRampToValueAtTime(Math.max(20, slideTo), now + duration);
+      gain.gain.setValueAtTime(volume, now); gain.gain.exponentialRampToValueAtTime(.0001, now + duration);
+      osc.connect(gain); gain.connect(ac.destination); osc.start(now); osc.stop(now + duration);
+    } catch (_) { /* Audio is optional when browser autoplay policy blocks it. */ }
+  }
+  function sfx(name) {
+    if (name === 'sword') { tone(210, .055, 'square', .04, 120); tone(760, .035, 'triangle', .025, 430, .025); }
+    else if (name === 'shield') { tone(115, .09, 'square', .045, 70); tone(330, .045, 'triangle', .02, 180); }
+    else if (name === 'bow') { tone(520, .055, 'triangle', .03, 180); tone(980, .025, 'square', .012, 620, .015); }
+    else if (name === 'arrowHit') { tone(190, .045, 'triangle', .025, 105); tone(1100, .018, 'square', .012, 600); }
+    else if (name === 'mageCharge') { tone(180, .16, 'sine', .018, 620); tone(310, .13, 'triangle', .012, 920, .08); }
+    else if (name === 'lightning') { tone(1450, .06, 'sawtooth', .035, 180); tone(820, .12, 'square', .025, 90, .025); }
+  }
+
   const colors = {
     floorB: '#4d3d49', floorCrack: '#3f323d', wall: '#2d2834', wallTop: '#6c5868', wallDark: '#1b1820',
     gold: '#e8b866', shadow: '#17131a99', water: '#3c6070', rune: '#78c0c1', red: '#c95c68'
@@ -349,18 +373,18 @@
   function attack(hero) {
     if (hero.attackCd > 0 || hero.downTimer > 0) return;
     if (hero.role === 'mage') {
-      if (!hero.charging) { hero.charging = true; hero.charge = 0; }
+      if (!hero.charging) { hero.charging = true; hero.charge = 0; sfx('mageCharge'); }
       return;
     }
     if (hero.role === 'archer') {
-      hero.attackCd = .42;
+      hero.attackCd = .42; sfx('bow');
       const len = Math.hypot(hero.dirX, hero.dirY) || 1;
       const dx = hero.dirX / len, dy = hero.dirY / len;
       state.projectiles.push({ kind: 'arrow', x: hero.x + dx * 22, y: hero.y + dy * 22, vx: dx * 430, vy: dy * 430, dirX: dx, dirY: dy, life: 2.2, stuck: 0 });
       return;
     }
 
-    hero.attackCd = .48;
+    hero.attackCd = .48; sfx('sword');
     let hitAny = false;
     for (const enemy of state.enemies) {
       if (!enemy.alive || dist(hero, enemy) > 58) continue;
@@ -375,7 +399,7 @@
   }
 
   function fireMage(hero) {
-    hero.charging = false; hero.charge = 0; hero.attackCd = .65;
+    hero.charging = false; hero.charge = 0; hero.attackCd = .65; sfx('lightning');
     const enemy = nearestAliveEnemy(hero, 270);
     if (!enemy) { spawnBurst(hero.x, hero.y - 12, '#75c6ff', 5); return; }
     state.effects.push({ kind: 'lightning', x1: hero.x, y1: hero.y - 8, x2: enemy.x, y2: enemy.y, life: .18 });
@@ -401,7 +425,7 @@
         if (!enemy.alive || dist(p, enemy) > enemy.r + 5) continue;
         damageEnemy(enemy, 1, '#e7d5a8'); hit = true; break;
       }
-      if (hit || projectileHitsObject(p)) { p.vx = 0; p.vy = 0; p.stuck = .5; }
+      if (hit || projectileHitsObject(p)) { p.vx = 0; p.vy = 0; p.stuck = .5; sfx('arrowHit'); }
     }
     state.projectiles = state.projectiles.filter(p => p.life > 0);
     for (const e of state.effects) e.life -= dt;
@@ -525,7 +549,7 @@
       if (target.role === 'warrior') {
         const towardEnemyX = (enemy.x - target.x) / d, towardEnemyY = (enemy.y - target.y) / d;
         const facing = target.dirX * towardEnemyX + target.dirY * towardEnemyY;
-        if (facing > .35) tryMove(enemy, towardEnemyX * 7, towardEnemyY * 7);
+        if (facing > .35) { tryMove(enemy, towardEnemyX * 7, towardEnemyY * 7); if (enemy.attackCd <= 0) sfx('shield'); }
       }
       if (enemy.attackCd <= 0) {
       enemy.attackCd = enemy.type === 'golem' ? 1.55 : 1.25;

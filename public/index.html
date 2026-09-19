@@ -35,6 +35,12 @@
           <option value="explore">Esplorazione · 8 dungeon scorrevoli</option>
         </select>
         <div class="difficulty-hint">Nelle stanze online decide la difficoltà scelta dall’host.</div>
+        <div class="field-label">Scegli il tuo eroe</div>
+        <div id="soloHeroPicker" class="hero-picker" role="radiogroup" aria-label="Personaggio">
+          <button class="hero-choice selected" data-hero="warrior" type="button"><strong>⚔ GUERRIERO</strong><span>Spada + scudo</span></button>
+          <button class="hero-choice" data-hero="archer" type="button"><strong>➶ ARCIERE</strong><span>Frecce a distanza</span></button>
+          <button class="hero-choice" data-hero="mage" type="button"><strong>✦ MAGO</strong><span>Fulmine auto-target</span></button>
+        </div>
 
         <div class="menu-actions">
           <button id="soloBtn" class="pixel-button primary" type="button">Gioca da solo</button>
@@ -61,6 +67,12 @@
           <strong id="roomCodeLabel">------</strong>
         </div>
         <div id="playerList" class="player-list"></div>
+        <div class="field-label">Il tuo eroe</div>
+        <div id="coopHeroPicker" class="hero-picker" role="radiogroup" aria-label="Personaggio multiplayer">
+          <button class="hero-choice" data-hero="warrior" type="button"><strong>⚔ GUERRIERO</strong><span>Spada + scudo</span></button>
+          <button class="hero-choice" data-hero="archer" type="button"><strong>➶ ARCIERE</strong><span>Frecce a distanza</span></button>
+          <button class="hero-choice" data-hero="mage" type="button"><strong>✦ MAGO</strong><span>Fulmine auto-target</span></button>
+        </div>
         <div class="lobby-actions">
           <button id="copyLinkBtn" class="pixel-button" type="button">Copia link</button>
           <button id="startRoomBtn" class="pixel-button primary" type="button">Avvia partita</button>
@@ -98,6 +110,7 @@
               <div><strong>Attacco</strong><span>ATTACCA · F · Invio</span></div>
               <div><strong>Interagisci</strong><span>USA · E · Shift</span></div>
             </div>
+            <div class="difficulty-hint">Guerriero: spada + scudo · Arciere: frecce direzionali · Mago: carica + fulmine auto-target.</div>
           </div>
           <div class="game-menu-version">VERSIONE <strong data-app-version>...</strong></div>
           <div class="game-menu-actions">

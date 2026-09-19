@@ -71,37 +71,42 @@
     </section>
 
     <section id="gameScreen" class="hidden">
-      <header class="topbar">
-        <div>
-          <div class="eyebrow">16-BIT CO-OP ADVENTURE</div>
-          <h1>TinyDungeon</h1>
-        </div>
-        <div class="topbar-actions">
-          <div class="topbar-version" data-app-version>...</div>
-          <div id="roomBadge" class="room-badge hidden"></div>
-          <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
-          <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
-          <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu</button>
-        </div>
-      </header>
+      <button id="gameMenuBtn" class="game-menu-button" type="button" aria-label="Apri menu di gioco" aria-haspopup="dialog" aria-controls="gameMenuOverlay">⚙</button>
+      <div id="roomBadge" class="room-badge hidden"></div>
 
       <section class="game-card">
         <div class="canvas-wrap">
           <canvas id="game" width="960" height="540" aria-label="TinyDungeon"></canvas>
           <div id="message" class="game-message" role="status" aria-live="polite"></div>
         </div>
-
-        <aside class="legend">
-          <div class="legend-title">Obiettivo</div>
-          <div id="objective">Supera le otto stanze del dungeon.</div>
-          <div class="legend-title controls-title">Controlli</div>
-          <div class="controls-grid">
-            <div><strong>Movimento</strong><span>WASD o frecce</span></div>
-            <div><strong>Attacco</strong><span>F o Invio</span></div>
-            <div><strong>Interagisci</strong><span>E o Shift</span></div>
-          </div>
-        </aside>
       </section>
+
+      <div id="gameMenuOverlay" class="game-menu-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="gameMenuMapName">
+        <div class="game-menu-panel">
+          <button id="closeGameMenuBtn" class="game-menu-close" type="button" aria-label="Chiudi menu">×</button>
+          <div class="game-menu-kicker">MAPPA ATTUALE</div>
+          <h2 id="gameMenuMapName">TinyDungeon</h2>
+          <div id="gameMenuCampaign" class="game-menu-campaign"></div>
+          <div class="game-menu-section">
+            <div class="legend-title">Obiettivo</div>
+            <div id="objective">Supera le otto stanze del dungeon.</div>
+          </div>
+          <div class="game-menu-section">
+            <div class="legend-title">Comandi</div>
+            <div class="controls-grid game-menu-controls">
+              <div><strong>Movimento</strong><span>Leva touch · WASD · Frecce</span></div>
+              <div><strong>Attacco</strong><span>ATTACCA · F · Invio</span></div>
+              <div><strong>Interagisci</strong><span>USA · E · Shift</span></div>
+            </div>
+          </div>
+          <div class="game-menu-version">VERSIONE <strong data-app-version>...</strong></div>
+          <div class="game-menu-actions">
+            <button id="fullscreenBtn" class="pixel-button secondary" type="button">Fullscreen</button>
+            <button id="restartBtn" class="pixel-button secondary" type="button">Ricomincia</button>
+            <button id="backMenuBtn" class="pixel-button secondary" type="button">Menu principale</button>
+          </div>
+        </div>
+      </div>
 
       <section class="touch-panel" aria-label="Controlli touch">
         <div id="moveJoystick" class="move-joystick" aria-label="Leva movimento a otto direzioni" role="application">

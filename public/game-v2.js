@@ -57,20 +57,36 @@
     return musicManifest;
   }
 
-  async function startDungeonMusic() {
-    if (dungeonMusic && dungeonMusicTrack) {
-      dungeonMusic.play().catch(() => {});
-      return;
+  function playDungeonMusicFromLoadedManifest() {
+    const tracks = musicManifest || [];
+    if (!tracks.length) return false;
+    if (!dungeonMusic) {
+      const choices = tracks.length > 1 ? tracks.filter(track => track !== previousDungeonMusicTrack) : tracks;
+      dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
+      previousDungeonMusicTrack = dungeonMusicTrack;
+      dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
+      dungeonMusic.loop = true; dungeonMusic.volume = .22; dungeonMusic.preload = 'auto';
     }
-    const tracks = await loadMusicManifest();
-    if (!tracks.length) return;
-    const choices = tracks.length > 1 ? tracks.filter(track => track !== previousDungeonMusicTrack) : tracks;
-    dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
-    previousDungeonMusicTrack = dungeonMusicTrack;
-    dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
-    dungeonMusic.loop = true; dungeonMusic.volume = .22; dungeonMusic.preload = 'auto';
     dungeonMusic.play().catch(() => {});
+    return true;
   }
+
+  async function startDungeonMusic() {
+    if (playDungeonMusicFromLoadedManifest()) return;
+    await loadMusicManifest();
+    playDungeonMusicFromLoadedManifest();
+  }
+
+  function unlockDungeonAudio() {
+    // Mobile Safari/Chrome require media playback to start inside a user gesture.
+    // The manifest is preloaded while the menu is visible, so this call stays synchronous.
+    playDungeonMusicFromLoadedManifest();
+    try { audio(); } catch (_) { /* optional WebAudio unlock */ }
+  }
+
+  loadMusicManifest();
+  document.addEventListener('pointerdown', unlockDungeonAudio, { once: true, passive: true });
+  document.addEventListener('keydown', unlockDungeonAudio, { once: true });
 
   function stopDungeonMusic() {
     if (dungeonMusic) { dungeonMusic.pause(); dungeonMusic.currentTime = 0; }

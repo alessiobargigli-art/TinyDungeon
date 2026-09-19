@@ -259,3 +259,9 @@ body { padding:0; background:#17151d; }
 .ios-install-card span{font-size:12px;line-height:1.5}
 .ios-install-close{position:absolute;top:4px;right:7px;border:0;background:transparent;color:#fff;font-size:26px;cursor:pointer}
 @media (orientation:landscape) and (max-height:650px) and (pointer:coarse){.ios-install-card{width:min(520px,88vw);padding:13px 18px;gap:5px}.ios-install-card strong{font-size:14px}.ios-install-card span{font-size:10px;line-height:1.25}}
+
+
+/* Main wizard actions: primary flow left, maintenance refresh right. */
+.wizard-primary-actions { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:stretch; }
+.wizard-primary-actions .wizard-next { width:100%; }
+.wizard-primary-actions .wizard-refresh { min-width:108px; white-space:nowrap; }

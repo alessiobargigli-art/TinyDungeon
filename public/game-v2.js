@@ -365,6 +365,9 @@
       plates: (cfg.plates || []).map(p => ({ ...p, active: false })),
       blocks: (cfg.blocks || []).map(b => ({ x: b.x, y: b.y, r: 24, target: { x: b.tx, y: b.ty, r: 30 }, solved: false })),
       torches: (cfg.torches || []).map(p => ({ ...p, lit: false })),
+      mazeLevers: (cfg.mazeLevers || []).map(p => ({ ...p, on: false })),
+      breakableWalls: (cfg.breakableWalls || []).map((w,i) => ({ ...w, id:i, hp:w.hp || 3, alive:true })),
+      teleportCooldown: 0,
       torchProgress: 0,
       exit: cfg.exit ? { ...cfg.exit } : { x: 870, y: 270 }
     };
@@ -460,6 +463,11 @@
   function roomWalls() {
     const cfg = roomConfig();
     const walls = [...commonWalls(), ...(cfg.extraWalls || [])];
+    if (state?.breakableWalls) walls.push(...state.breakableWalls.filter(w => w.alive));
+    if (cfg.gates && state?.mazeLevers) for (const gate of cfg.gates) {
+      const lever = state.mazeLevers.find(l => l.gate === gate.id);
+      if (!lever?.on) walls.push(gate);
+    }
     if (cfg.type === 'lever' && cfg.gateX && !state.roomSolved) walls.push({ x: cfg.gateX, y: 28, w: 28, h: H - 56 });
     if (cfg.type === 'blocks') {
       walls.push({ x: 270, y: 28, w: 28, h: 145 }, { x: 270, y: 367, w: 28, h: 145 });
@@ -560,6 +568,16 @@
       const push = enemy.type === 'golem' ? 7 : 15;
       tryMove(enemy, ((enemy.x - hero.x) / d) * push, ((enemy.y - hero.y) / d) * push);
     }
+    if (hero.role === 'warrior') {
+      for (const wall of state.breakableWalls || []) {
+        if (!wall.alive) continue;
+        const cx=clamp(hero.x,wall.x,wall.x+wall.w), cy=clamp(hero.y,wall.y,wall.y+wall.h);
+        if (Math.hypot(hero.x-cx,hero.y-cy)>62) continue;
+        wall.hp--; hitAny=true; spawnBurst(cx,cy,'#b69a78',8);
+        if(wall.hp<=0){wall.alive=false;spawnBurst(cx,cy,'#d0b18b',22);showMessage('CRASH! Il muro cede.');}
+        break;
+      }
+    }
     if (!hitAny) spawnBurst(hero.x + hero.dirX * 28, hero.y + hero.dirY * 28, '#d9c6a4', 3);
   }
 
@@ -597,6 +615,10 @@
           damageEnemy(enemy, 1, '#e7d5a8'); hit = true; break;
         }
       }
+      if (!hit && p.kind !== 'enemyArrow') {
+        const wall=(state.breakableWalls||[]).find(w=>w.alive&&collidesCircleRect(p.x,p.y,4,w));
+        if(wall){wall.hp--;hit=true;spawnBurst(p.x,p.y,'#b69a78',6);if(wall.hp<=0){wall.alive=false;spawnBurst(p.x,p.y,'#d0b18b',18);showMessage('CRASH! Il muro cede.');}}
+      }
       if (hit || projectileHitsObject(p)) { p.vx = 0; p.vy = 0; p.stuck = .5; sfx('arrowHit'); }
     }
     state.projectiles = state.projectiles.filter(p => p.life > 0);
@@ -629,6 +651,13 @@
         lever.on = true;
         showMessage('CLACK! Un sigillo risponde.'); spawnBurst(lever.x, lever.y, colors.gold, 10);
         evaluateRoom(); updateObjective(); return;
+      }
+    }
+
+    if (cfg.type === 'arcaneMaze') {
+      for (const lever of state.mazeLevers || []) {
+        if (lever.on || !near(hero,lever,55)) continue;
+        lever.on=true; showMessage('CLACK! Un passaggio si apre.'); spawnBurst(lever.x,lever.y,colors.gold,12); return;
       }
     }
 
@@ -717,6 +746,11 @@
     }
     const input = inputForHero(hero, index);
     if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; const moveSpeed = input.catchUp ? hero.speed * 1.18 : hero.speed; tryMove(hero, input.x * moveSpeed * dt, input.y * moveSpeed * dt); }
+    if (state.teleportCooldown > 0) state.teleportCooldown=Math.max(0,state.teleportCooldown-dt);
+    if (input.moving && state.teleportCooldown<=0 && roomConfig().teleports?.length) {
+      const ports=roomConfig().teleports;
+      for(let pi=0;pi<ports.length;pi++){const p=ports[pi];if(Math.hypot(hero.x-p.x,hero.y-p.y)<28){const dest=ports[p.to];if(dest){hero.x=dest.x;hero.y=dest.y;state.teleportCooldown=.7;spawnBurst(dest.x,dest.y,'#b88cff',14);}break;}}
+    }
     if (input.attack) attack(hero);
     if (input.interact && !hero._interactHeld) interact(hero);
     hero._interactHeld = input.interact;
@@ -817,6 +851,8 @@
       if (state.blocks.length && state.blocks.every(b => b.solved) && clearOkay) state.roomSolved = true;
     } else if (cfg.type === 'bridge') {
       if (state.bridgeOn && clearOkay) state.roomSolved = true;
+    } else if (cfg.type === 'arcaneMaze') {
+      if (!cfg.startSolved && allEnemiesDead()) state.roomSolved = true;
     } else if (cfg.type === 'battle' || cfg.type === 'boss') {
       if (allEnemiesDead()) state.roomSolved = true;
     } else if (cfg.type === 'torches') {
@@ -852,7 +888,8 @@
     return {
       difficulty, humans: state.humans, roomIndex: state.roomIndex, roomSolved: state.roomSolved, complete: state.complete, hasKey: state.hasKey,
       elapsed: state.elapsed, roomElapsed: state.roomElapsed, timedRemaining: state.timedRemaining, bridgeOn: state.bridgeOn, chestOpen: state.chestOpen, torchProgress: state.torchProgress,
-      levers: state.levers.map(l => ({ on: l.on })), plates: state.plates.map(p => ({ active: p.active })), torches: state.torches.map(t => ({ lit: t.lit })),
+      levers: state.levers.map(l => ({ on: l.on })),
+      mazeLevers: (state.mazeLevers||[]).map(l=>({on:l.on})), breakableWalls:(state.breakableWalls||[]).map(w=>({hp:w.hp,alive:w.alive})), plates: state.plates.map(p => ({ active: p.active })), torches: state.torches.map(t => ({ lit: t.lit })),
       blocks: state.blocks.map(b => ({ x: b.x, y: b.y, solved: b.solved })),
       heroes: state.heroes.map(h => ({ x: h.x, y: h.y, hp: h.hp, dirX: h.dirX, dirY: h.dirY, attackCd: h.attackCd, charge: h.charge, charging: h.charging, hitFlash: h.hitFlash, downTimer: h.downTimer, isAI: h.isAI })),
       projectiles: state.projectiles.map(p => ({ ...p })), effects: state.effects.map(e => ({ ...e })),
@@ -973,6 +1010,11 @@
       for (let y = 48; y < H - 40; y += 32) pxRect(440, y, 120, 3, '#7eb0b555');
       if (state.bridgeOn) { pxRect(425, 220, 150, 102, '#604936'); for (let x = 432; x < 570; x += 20) pxRect(x, 224, 14, 94, '#8f6948'); }
       drawLever(cfg.bridgeLever, state.bridgeOn);
+    }
+    if (cfg.type === 'arcaneMaze') {
+      (state.breakableWalls||[]).filter(w=>w.alive).forEach(w=>{pxRect(w.x,w.y,w.w,w.h,'#70594e');for(let y=w.y+8;y<w.y+w.h;y+=18)pxRect(w.x+4,y,Math.max(4,w.w-8),3,'#a18470');});
+      (state.mazeLevers||[]).forEach(l=>drawLever(l,l.on));
+      (cfg.teleports||[]).forEach((p,i)=>{ctx.strokeStyle=i%2?'#70d7d0':'#b88cff';ctx.lineWidth=3;ctx.beginPath();ctx.arc(p.x,p.y,22+Math.sin(state.elapsed*4+i)*3,0,Math.PI*2);ctx.stroke();});
     }
     if (cfg.type === 'key') drawChest(cfg.chest, state.chestOpen);
     if (cfg.type === 'torches') {

@@ -560,14 +560,35 @@
       if (p.stuck > 0) { p.stuck -= dt; p.life = p.stuck; continue; }
       p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
       let hit = false;
-      for (const enemy of state.enemies) {
-        if (!enemy.alive || dist(p, enemy) > enemy.r + 5) continue;
-        damageEnemy(enemy, 1, '#e7d5a8'); hit = true; break;
+      if (p.kind === 'enemyArrow') {
+        for (const hero of state.heroes) {
+          if (hero.downTimer > 0 || dist(p, hero) > hero.r + 5) continue;
+          hurtHero(hero, 1, '#e7b66c'); hit = true; break;
+        }
+      } else {
+        for (const enemy of state.enemies) {
+          if (!enemy.alive || dist(p, enemy) > enemy.r + 5) continue;
+          damageEnemy(enemy, 1, '#e7d5a8'); hit = true; break;
+        }
       }
       if (hit || projectileHitsObject(p)) { p.vx = 0; p.vy = 0; p.stuck = .5; sfx('arrowHit'); }
     }
     state.projectiles = state.projectiles.filter(p => p.life > 0);
-    for (const e of state.effects) e.life -= dt;
+    for (const e of state.effects) {
+      e.life -= dt;
+      if (e.damagePending && e.life <= .12) {
+        e.damagePending = false;
+        if (e.kind === 'enemyLightning') {
+          const target = state.heroes.filter(h=>h.downTimer<=0).sort((a,b)=>Math.hypot(a.x-e.x2,a.y-e.y2)-Math.hypot(b.x-e.x2,b.y-e.y2))[0];
+          if (target && Math.hypot(target.x-e.x2,target.y-e.y2)<55) hurtHero(target,1,'#9ee7ff');
+        } else if (e.kind === 'shockwave') {
+          state.heroes.forEach(h=>{if(h.downTimer<=0&&Math.hypot(h.x-e.x,h.y-e.y)<e.r) hurtHero(h,1,'#f0c060');});
+        }
+      }
+      if (e.kind === 'meteor' && e.life <= .12 && !e.impacted) {
+        e.impacted=true; state.heroes.forEach(h=>{if(h.downTimer<=0&&Math.hypot(h.x-e.x,h.y-e.y)<e.r) hurtHero(h,1,'#ff8b55');}); spawnBurst(e.x,e.y,'#ff9b55',18);
+      }
+    }
     state.effects = state.effects.filter(e => e.life > 0);
   }
 
@@ -797,7 +818,7 @@
       blocks: state.blocks.map(b => ({ x: b.x, y: b.y, solved: b.solved })),
       heroes: state.heroes.map(h => ({ x: h.x, y: h.y, hp: h.hp, dirX: h.dirX, dirY: h.dirY, attackCd: h.attackCd, charge: h.charge, charging: h.charging, hitFlash: h.hitFlash, downTimer: h.downTimer, isAI: h.isAI })),
       projectiles: state.projectiles.map(p => ({ ...p })), effects: state.effects.map(e => ({ ...e })),
-      enemies: state.enemies.map(e => ({ type: e.type, x: e.x, y: e.y, r: e.r, hp: e.hp, maxHp: e.maxHp, speed: e.speed, color: e.color, damage: e.damage, hit: e.hit, attackCd: e.attackCd, alive: e.alive, wobble: e.wobble }))
+      enemies: state.enemies.map(e => ({ type:e.type,x:e.x,y:e.y,r:e.r,hp:e.hp,maxHp:e.maxHp,speed:e.speed,color:e.color,damage:e.damage,hit:e.hit,attackCd:e.attackCd,alive:e.alive,wobble:e.wobble,boss:e.boss,elite:e.elite,specialCd:e.specialCd,special:e.special,specialCharge:e.specialCharge,specialData:e.specialData }))
     };
   }
 
@@ -968,8 +989,11 @@
   }
 
   function drawEffect(e) {
-    if (e.kind !== 'lightning') return;
-    ctx.strokeStyle = '#9ee7ff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(e.x1, e.y1);
+    if (e.kind === 'meteor') { ctx.strokeStyle='#ff725c'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.stroke(); pxRect(e.x-5,e.y-45*e.life,10,10,'#ffb04f'); return; }
+    if (e.kind === 'wind') { ctx.strokeStyle='#bcecff99'; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(e.x,e.y,e.r*(1-e.life),0,Math.PI*2); ctx.stroke(); return; }
+    if (e.kind === 'shockwave') { ctx.strokeStyle='#ffd277'; ctx.lineWidth=5; ctx.beginPath(); ctx.arc(e.x,e.y,e.r*(1-e.life),0,Math.PI*2); ctx.stroke(); return; }
+    if (e.kind !== 'lightning' && e.kind !== 'enemyLightning') return;
+    ctx.strokeStyle = e.kind === 'enemyLightning' ? '#d7a4ff' : '#9ee7ff'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(e.x1, e.y1);
     const steps = 5;
     for (let i = 1; i < steps; i++) {
       const t = i / steps, x = e.x1 + (e.x2 - e.x1) * t, y = e.y1 + (e.y2 - e.y1) * t;
@@ -986,6 +1010,11 @@
     else if (e.type === 'skeleton') { pxRect(x - 8, y - 18, 16, 14, body); pxRect(x - 10, y - 5, 20, 16, '#6b6257'); pxRect(x - 5, y - 13, 3, 3, '#29242a'); pxRect(x + 3, y - 13, 3, 3, '#29242a'); }
     else if (e.type === 'bat') { pxRect(x - 9, y - 5, 18, 12, body); pxRect(x - 22, y - 10, 14, 9, body); pxRect(x + 8, y - 10, 14, 9, body); pxRect(x - 4, y - 1, 3, 3, '#f0d187'); pxRect(x + 2, y - 1, 3, 3, '#f0d187'); }
     else { pxRect(x - 26, y - 20, 52, 46, body); pxRect(x - 20, y - 33, 40, 20, '#7c5d48'); pxRect(x - 13, y - 24, 7, 7, '#f0b35e'); pxRect(x + 6, y - 24, 7, 7, '#f0b35e'); pxRect(x - 34, y - 12, 12, 33, '#6e5547'); pxRect(x + 22, y - 12, 12, 33, '#6e5547'); }
+    if (e.special) {
+      const max = e.special === 'meteors' || e.special === 'storm' ? 2.6 : 2.1;
+      const progress = Math.max(0, 1 - e.specialCharge / max);
+      pxRect(x-34,y-e.r-23,68,7,'#1a141ccc'); pxRect(x-32,y-e.r-21,64*progress,3,'#ffb24d');
+    } else if (e.elite) { pxRect(x-4,y-e.r-23,8,8,'#b68cff'); }
     const bars = Math.min(e.maxHp, 14);
     for (let i = 0; i < bars; i++) pxRect(x - bars * 3 + i * 6, y - e.r - 13, 4, 3, i < Math.ceil((e.hp / e.maxHp) * bars) ? '#d5656b' : '#49373d');
   }

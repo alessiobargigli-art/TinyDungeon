@@ -333,9 +333,9 @@
       difficulty, humans: 1, roomIndex, roomSolved: !!cfg.startSolved, complete: false, hasKey: keepKey,
       elapsed: 0, roomElapsed: 0, particles: [], projectiles: [], effects: [], timedRemaining: cfg.timed || 0,
       heroes: [
-        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 116, cfg),
-        createHero('Archer', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 126, cfg),
-        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 108, cfg)
+        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 136, cfg),
+        createHero('Archer', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 146, cfg),
+        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 128, cfg)
       ],
       enemies: (cfg.enemies || []).map(createEnemy),
       levers: (cfg.levers || []).map(p => ({ ...p, on: false })),
@@ -466,9 +466,13 @@
         spawnBurst(block.x, block.y, colors.rune, 14);
         showMessage('Un sigillo runico si illumina.');
       }
-      return false;
+      return true;
     }
     return false;
+  }
+
+  function heroOverlapsBlock(hero, x, y) {
+    return roomConfig().type === 'blocks' && state.blocks.some(block => Math.hypot(x - block.x, y - block.y) < hero.r + block.r);
   }
 
   function tryMove(entity, dx, dy) {
@@ -476,10 +480,10 @@
     const isHero = state.heroes.includes(entity);
     let nx = entity.x + dx;
     if (isHero && tryPushBlock(entity, nx, entity.y, dx, 0)) nx = entity.x;
-    if (canMoveCircle(nx, entity.y, entity.r)) entity.x = nx;
+    if (canMoveCircle(nx, entity.y, entity.r) && (!isHero || !heroOverlapsBlock(entity, nx, entity.y))) entity.x = nx;
     let ny = entity.y + dy;
     if (isHero && tryPushBlock(entity, entity.x, ny, 0, dy)) ny = entity.y;
-    if (canMoveCircle(entity.x, ny, entity.r)) entity.y = ny;
+    if (canMoveCircle(entity.x, ny, entity.r) && (!isHero || !heroOverlapsBlock(entity, entity.x, ny))) entity.y = ny;
   }
 
   function nearestAliveEnemy(hero, maxRange = Infinity) {
@@ -661,10 +665,10 @@
     }
 
     const leader = nearestHuman(hero);
-    const offset = index === 1 ? { x: -38, y: 38 } : { x: -38, y: -38 };
+    const offset = index === 1 ? { x: -24, y: 24 } : { x: -24, y: -24 };
     const tx = leader.x + offset.x, ty = leader.y + offset.y;
     const d = Math.hypot(tx - hero.x, ty - hero.y);
-    if (d > 30) return { x: (tx - hero.x) / d, y: (ty - hero.y) / d, moving: true, attack: false, interact: false };
+    if (d > 18) return { x: (tx - hero.x) / d, y: (ty - hero.y) / d, moving: true, attack: false, interact: false, catchUp: d > 95 };
     return neutralInput();
   }
 
@@ -690,7 +694,7 @@
       return;
     }
     const input = inputForHero(hero, index);
-    if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; tryMove(hero, input.x * hero.speed * dt, input.y * hero.speed * dt); }
+    if (input.moving) { hero.dirX = input.x; hero.dirY = input.y; const moveSpeed = input.catchUp ? hero.speed * 1.18 : hero.speed; tryMove(hero, input.x * moveSpeed * dt, input.y * moveSpeed * dt); }
     if (input.attack) attack(hero);
     if (input.interact && !hero._interactHeld) interact(hero);
     hero._interactHeld = input.interact;

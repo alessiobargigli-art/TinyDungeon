@@ -235,7 +235,7 @@
         ], enemies:[['skeleton',480,520,5,40],['slime',800,850,4,35],['bat',820,180,3,63],['skeleton',1150,520,5,41],['bat',1480,180,3,64],['slime',1800,850,4,36]], objective:'Attraversa le sei camere infestate.' },
         { name:'Il dedalo sommerso', type:'maze', world:{width:2240,height:1260}, startSolved:true, spawn:[{x:100,y:1160},{x:135,y:1195},{x:135,y:1125}], exit:{x:2140,y:100}, extraWalls:[
           {x:300,y:220,w:32,h:1012},{x:620,y:28,w:32,h:900},{x:940,y:330,w:32,h:902},{x:1260,y:28,w:32,h:900},{x:1580,y:330,w:32,h:902},{x:1900,y:28,w:32,h:900},
-          {x:300,y:600,w:180,w:180,h:32}
+          {x:300,y:600,w:180,h:32}
         ], enemies:[['bat',460,1080,4,64],['skeleton',780,180,5,42],['slime',1100,1050,5,36],['bat',1420,180,4,65],['skeleton',1740,1050,6,42],['bat',2050,450,4,66]], objective:'Attraversa il dedalo sommerso e risali a nord.' },
         { name:'La rete oscura', type:'maze', world:{width:2520,height:1420}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:2420,y:1320}, extraWalls:[
           {x:360,y:28,w:32,h:560},{x:360,y:760,w:32,h:632},{x:720,y:260,w:32,h:1132},{x:1080,y:28,w:32,h:560},{x:1080,y:760,w:32,h:632},{x:1440,y:260,w:32,h:1132},{x:1800,y:28,w:32,h:560},{x:1800,y:760,w:32,h:632},{x:2160,y:260,w:32,h:900}

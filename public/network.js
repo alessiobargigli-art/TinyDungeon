@@ -81,11 +81,10 @@
   function setHeroPicker(containerId, hero, online = false) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    const occupied = new Set(online ? players.filter(p => p.slot !== slot && p.hero).map(p => p.hero) : []);
     container.querySelectorAll('[data-hero]').forEach(button => {
       const value = button.dataset.hero;
       button.classList.toggle('selected', value === hero);
-      button.disabled = occupied.has(value);
+      button.disabled = false;
     });
   }
   function chooseHero(hero, online = false) {
@@ -208,11 +207,6 @@
         players = Array.isArray(message.players) ? message.players : [];
         if (!started) renderLobby();
         adapter?.updateOnlineRoster?.(players);
-        break;
-      case 'hero-rejected':
-        players = Array.isArray(message.players) ? message.players : players;
-        lobbyStatus.textContent = 'Questo eroe è già stato scelto. Scegline un altro.';
-        renderLobby();
         break;
       case 'start':
         players = Array.isArray(message.players) ? message.players : players;

@@ -26,7 +26,7 @@ Frontend e multiplayer condividono lo stesso origin, quindi non serve configurar
 
 ## Campagne e difficoltà
 
-TinyDungeon comprende **24 stanze**, divise in tre campagne indipendenti da 8 stanze ciascuna.
+TinyDungeon comprende **32 stanze**, divise in quattro campagne indipendenti da 8 stanze ciascuna. Le prime tre usano stanze a schermata singola; la campagna Esplorazione introduce mondi scorrevoli con camera locale per giocatore.
 
 ### Facile · Il primo dungeon
 
@@ -46,6 +46,12 @@ Combina puzzle già conosciuti con più passaggi e combattimenti: doppie rune, p
 ### Difficile · La cripta gemella
 
 Aumenta soprattutto coordinazione e complessità: tre sigilli temporizzati, piastre sotto assedio, labirinto con due massi, ponte sorvegliato, cripta con gruppo misto di nemici, custode maggiore della chiave, sequenza di quattro fiamme e due Golem finali con rinforzi.
+
+### Esplorazione · Dungeon scorrevoli
+
+Otto nuovi livelli da **1920×1080**, cioè il doppio della larghezza e dell’altezza del viewport di gioco. Ogni client mantiene una camera locale che segue il proprio eroe e si blocca ai bordi della mappa: in multiplayer i giocatori possono quindi esplorare zone diverse della stessa stanza mantenendo una simulazione condivisa.
+
+I livelli mantengono il linguaggio visivo e il combattimento leggero delle campagne originali, ma introducono corridoi, corti, cripte e labirinti più estesi. L’obiettivo è raggiungere la porta di uscita; l’ultimo livello termina con il portale del Grande Labirinto.
 
 La difficoltà non trasforma il gioco in una modalità frenetica: i nemici restano leggibili e le stanze mantengono un obiettivo chiaro.
 

@@ -357,6 +357,7 @@
   let localSlot = 0;
   let connectedSlots = new Set([0]);
   let playerHeroBySlot = new Map([[0, 0]]);
+  let currentRoster = [];
   let remoteInputs = {};
   let difficulty = normalizeDifficulty(difficultySelect?.value || localStorage.getItem('tinyDungeon.difficulty') || 'easy');
   let state = createState(0, false);
@@ -434,7 +435,7 @@
   function resetWorld() {
     state = createState(0, false);
     remoteInputs = {};
-    applyRosterFlags();
+    applyRosterFlags(currentRoster);
     updateObjective();
     showMessage(`${difficultyLabel()} · ${mode === 'solo' ? 'La spedizione comincia.' : 'Il gruppo entra nel dungeon.'}`, 2.2);
   }
@@ -444,7 +445,7 @@
     const humans = state.humans;
     state = createState(index, key);
     state.humans = humans;
-    applyRosterFlags();
+    applyRosterFlags(currentRoster);
     updateObjective();
     showMessage(`${difficultyLabel()} · STANZA ${index + 1}/${campaign().rooms.length} · ${roomConfig().name}`, 2.2);
     changeDungeonMusicForLevel();
@@ -1239,9 +1240,10 @@
   }
 
   function setRoster(players) {
-    connectedSlots = new Set((players || []).map(p => Number(p.slot)).filter(v => v >= 0 && v <= 2));
-    playerHeroBySlot = new Map((players || []).filter(p => p.hero).map(p => [Number(p.slot), Number(p.slot)]));
-    applyRosterFlags(players || []);
+    currentRoster = (players || []).map(p => ({ ...p }));
+    connectedSlots = new Set(currentRoster.map(p => Number(p.slot)).filter(v => v >= 0 && v <= 2));
+    playerHeroBySlot = new Map(currentRoster.filter(p => p.hero).map(p => [Number(p.slot), Number(p.slot)]));
+    applyRosterFlags(currentRoster);
   }
 
   difficultySelect?.addEventListener('change', () => chooseDifficulty(difficultySelect.value));
@@ -1264,7 +1266,7 @@
   });
 
   window.TinyDungeonNet?.registerGame({
-    startSolo(info = {}) { chooseDifficulty(difficultySelect?.value || difficulty); mode = 'solo'; localSlot = heroIndex(info.hero); connectedSlots = new Set([0]); playerHeroBySlot = new Map([[0, localSlot]]); stopDungeonMusic(); resetWorld(); startDungeonMusic(); },
+    startSolo(info = {}) { chooseDifficulty(difficultySelect?.value || difficulty); mode = 'solo'; localSlot = heroIndex(info.hero); connectedSlots = new Set([0]); playerHeroBySlot = new Map([[0, localSlot]]); currentRoster = [{ slot: localSlot, hero: info.hero || 'warrior' }]; stopDungeonMusic(); resetWorld(); startDungeonMusic(); },
     startOnline(info) {
       const networkSlot = Number(info.slot || 0); mode = info.isHost ? 'host' : 'guest';
       if (info.isHost) chooseDifficulty(difficultySelect?.value || difficulty);

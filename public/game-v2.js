@@ -22,7 +22,17 @@
   const musicVolumeSlider = document.getElementById('musicVolumeSlider');
   const musicVolumeValue = document.getElementById('musicVolumeValue');
   const muteBtn = document.getElementById('muteBtn');
-  let sfxVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.sfxVolume') ?? 1)));
+  // Audio profile v2: old builds stored much louder defaults on iPad/PWA.
+  // Migrate once, then never overwrite the player's later adjustments.
+  const AUDIO_PROFILE_KEY = 'tinyDungeon.audioProfile';
+  if (localStorage.getItem(AUDIO_PROFILE_KEY) !== '2') {
+    const oldMusic = Number(localStorage.getItem('tinyDungeon.musicVolume'));
+    const oldSfx = Number(localStorage.getItem('tinyDungeon.sfxVolume'));
+    if (!Number.isFinite(oldMusic) || oldMusic > .12) localStorage.setItem('tinyDungeon.musicVolume', '.03');
+    if (!Number.isFinite(oldSfx) || oldSfx > .7) localStorage.setItem('tinyDungeon.sfxVolume', '.35');
+    localStorage.setItem(AUDIO_PROFILE_KEY, '2');
+  }
+  let sfxVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.sfxVolume') ?? .35)));
   let musicVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.musicVolume') ?? .03)));
   let audioMuted = localStorage.getItem('tinyDungeon.muted') === 'true';
   let audioCtx = null;

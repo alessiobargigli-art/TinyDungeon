@@ -744,10 +744,10 @@
     enemy.hit=Math.max(0,enemy.hit-dt); enemy.attackCd=Math.max(0,enemy.attackCd-dt); enemy.wobble+=dt*(enemy.type==='bat'?7:4);
     if (enemy.special) { enemy.specialCharge-=dt; if(enemy.specialCharge<=0) resolveBossSpecial(enemy); return; }
     if (enemy.specialCd>0) enemy.specialCd-=dt;
-    if (enemy.boss && enemy.specialCd<=0) { startBossSpecial(enemy); return; }
     let target=null,bestDistance=enemy.boss?420:enemy.elite?330:195;
     for(const hero of state.heroes){if(hero.downTimer>0)continue;const d=dist(enemy,hero);if(d<bestDistance){target=hero;bestDistance=d;}}
     if(!target)return;
+    if (enemy.boss && enemy.specialCd<=0) { startBossSpecial(enemy); return; }
     const d=Math.max(1,dist(enemy,target));
     const ranged = enemy.combatRole === 'ranged' || (enemy.elite && enemy.type !== 'slime');
     if (ranged && d < 145) {
@@ -1017,6 +1017,10 @@
   function drawEnemy(e) {
     if (!e.alive) return;
     const x = Math.round(e.x), y = Math.round(e.y + Math.sin(e.wobble) * (e.type === 'bat' ? 5 : 2));
+    if (e.boss) {
+      ctx.strokeStyle = '#d7a4ff66'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(Math.round(e.x), Math.round(e.y), 420, 0, Math.PI * 2); ctx.stroke();
+    }
     pxRect(x - e.r, y + e.r * .55, e.r * 2, Math.max(5, e.r * .35), colors.shadow); const body = e.hit > 0 ? '#fff0cc' : e.color;
     if (e.type === 'slime') { pxRect(x - 14, y - 6, 28, 16, body); pxRect(x - 10, y - 13, 20, 9, body); pxRect(x - 7, y - 5, 4, 4, '#22352a'); pxRect(x + 4, y - 5, 4, 4, '#22352a'); }
     else if (e.type === 'skeleton') { pxRect(x - 8, y - 18, 16, 14, body); pxRect(x - 10, y - 5, 20, 16, '#6b6257'); pxRect(x - 5, y - 13, 3, 3, '#29242a'); pxRect(x + 3, y - 13, 3, 3, '#29242a'); }

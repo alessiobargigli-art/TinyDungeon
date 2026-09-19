@@ -23,7 +23,7 @@
   const musicVolumeValue = document.getElementById('musicVolumeValue');
   const muteBtn = document.getElementById('muteBtn');
   let sfxVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.sfxVolume') ?? 1)));
-  let musicVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.musicVolume') ?? .55)));
+  let musicVolume = Math.max(0, Math.min(1, Number(localStorage.getItem('tinyDungeon.musicVolume') ?? .03)));
   let audioMuted = localStorage.getItem('tinyDungeon.muted') === 'true';
   let audioCtx = null;
   function audio() {
@@ -73,7 +73,7 @@
       dungeonMusicTrack = choices[Math.floor(Math.random() * choices.length)] || tracks[0];
       previousDungeonMusicTrack = dungeonMusicTrack;
       dungeonMusic = new Audio(`./music/${encodeURIComponent(dungeonMusicTrack)}`);
-      dungeonMusic.loop = true; dungeonMusic.volume = audioMuted ? 0 : .22 * musicVolume; dungeonMusic.preload = 'auto';
+      dungeonMusic.loop = true; dungeonMusic.volume = audioMuted ? 0 : musicVolume * musicVolume; dungeonMusic.preload = 'auto';
     }
     dungeonMusic.play().catch(() => {});
     return true;
@@ -102,7 +102,7 @@
   }
 
   function applyAudioSettings() {
-    if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : .22 * musicVolume;
+    if (dungeonMusic) dungeonMusic.volume = audioMuted ? 0 : musicVolume * musicVolume;
     if (sfxVolumeSlider) sfxVolumeSlider.value = String(Math.round(sfxVolume * 100));
     if (sfxVolumeValue) sfxVolumeValue.textContent = `${Math.round(sfxVolume * 100)}%`;
     if (musicVolumeSlider) musicVolumeSlider.value = String(Math.round(musicVolume * 100));

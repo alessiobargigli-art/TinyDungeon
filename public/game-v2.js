@@ -322,7 +322,9 @@
     const hpMultiplier = difficulty === 'hard' ? 1.45 : difficulty === 'medium' ? 1.3 : difficulty === 'explore' ? 1.25 : 1.2;
     const boostedHp = Math.max(2, Math.ceil(hp * hpMultiplier));
     const boostedSpeed = speed * (difficulty === 'hard' ? 1.12 : difficulty === 'medium' ? 1.08 : 1.05);
-    return { type, x, y, r: defaults.r, hp: boostedHp, maxHp: boostedHp, speed: boostedSpeed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, ...extra };
+    const boss = type === 'golem';
+    const elite = !boss && boostedHp >= 7;
+    return { type, x, y, r: defaults.r, hp: boss ? Math.ceil(boostedHp * 2.25) : boostedHp, maxHp: boss ? Math.ceil(boostedHp * 2.25) : boostedHp, speed: boostedSpeed, color: defaults.color, damage: defaults.damage, hit: 0, attackCd: 0, alive: true, wobble: Math.random() * 6, boss, elite, specialCd: boss ? 4 + Math.random() * 2 : elite ? 2.5 + Math.random() * 2 : 0, special: '', specialCharge: 0, specialData: null, ...extra };
   }
 
   function createState(roomIndex = 0, keepKey = false) {
@@ -673,29 +675,72 @@
     hero._interactHeld = input.interact;
   }
 
+  function hurtHero(hero, amount, color = colors.red) {
+    if (!hero || hero.downTimer > 0) return;
+    hero.hp -= amount; hero.hitFlash = .24; spawnBurst(hero.x, hero.y, color, 8);
+    if (hero.hp <= 0) hero.downTimer = 2.8;
+  }
+
+  function startBossSpecial(enemy) {
+    const choices = ['meteors', 'wind', 'charge', 'storm', 'shockwave'];
+    enemy.special = choices[Math.floor(Math.random() * choices.length)];
+    enemy.specialCharge = enemy.special === 'meteors' || enemy.special === 'storm' ? 2.6 : 2.1;
+    const target = state.heroes.filter(h => h.downTimer <= 0).sort((a,b) => dist(enemy,a)-dist(enemy,b))[0];
+    enemy.specialData = target ? { x: target.x, y: target.y } : { x: enemy.x, y: enemy.y };
+    const labels = { meteors:'PIOGGIA DI METEORE', wind:'VENTO DEVASTANTE', charge:'CARICA DEL TITANO', storm:'TEMPESTA DI FULMINI', shockwave:'ONDA D’URTO' };
+    showMessage(`⚠ ${labels[enemy.special]} · PREPARATI!`, enemy.specialCharge);
+  }
+
+  function resolveBossSpecial(enemy) {
+    const kind = enemy.special, world = worldSize();
+    if (kind === 'meteors') {
+      for (const hero of state.heroes) {
+        if (hero.downTimer > 0) continue;
+        const ox = (Math.random()-.5)*90, oy=(Math.random()-.5)*90;
+        state.effects.push({kind:'meteor',x:hero.x+ox,y:hero.y+oy,life:.65,r:38});
+      }
+    } else if (kind === 'wind') {
+      for (const hero of state.heroes) {
+        if (hero.downTimer > 0) continue;
+        const d=Math.max(1,dist(enemy,hero)); tryMove(hero,((hero.x-enemy.x)/d)*135,((hero.y-enemy.y)/d)*135);
+      }
+      state.effects.push({kind:'wind',x:enemy.x,y:enemy.y,life:.65,r:240});
+    } else if (kind === 'charge') {
+      const t=enemy.specialData||{x:enemy.x,y:enemy.y}; const d=Math.max(1,Math.hypot(t.x-enemy.x,t.y-enemy.y));
+      for(let n=0;n<10;n++) tryMove(enemy,((t.x-enemy.x)/d)*18,((t.y-enemy.y)/d)*18);
+      state.heroes.forEach(h=>{if(h.downTimer<=0&&dist(enemy,h)<70) hurtHero(h,2,'#f0a060');});
+      state.effects.push({kind:'shockwave',x:enemy.x,y:enemy.y,life:.5,r:75});
+    } else if (kind === 'storm') {
+      state.heroes.filter(h=>h.downTimer<=0).forEach(h=>state.effects.push({kind:'enemyLightning',x1:enemy.x,y1:enemy.y,x2:h.x,y2:h.y,life:.3,damagePending:true}));
+    } else if (kind === 'shockwave') {
+      state.effects.push({kind:'shockwave',x:enemy.x,y:enemy.y,life:.55,r:150,damagePending:true});
+    }
+    enemy.special=''; enemy.specialData=null; enemy.specialCd=5+Math.random()*3;
+  }
+
   function updateEnemy(enemy, dt) {
     if (!enemy.alive) return;
-    enemy.hit = Math.max(0, enemy.hit - dt); enemy.attackCd = Math.max(0, enemy.attackCd - dt); enemy.wobble += dt * (enemy.type === 'bat' ? 7 : 4);
-    let target = null, bestDistance = enemy.type === 'golem' ? 230 : 195;
-    for (const hero of state.heroes) {
-      if (hero.downTimer > 0) continue;
-      const d = dist(enemy, hero);
-      if (d < bestDistance) { target = hero; bestDistance = d; }
+    enemy.hit=Math.max(0,enemy.hit-dt); enemy.attackCd=Math.max(0,enemy.attackCd-dt); enemy.wobble+=dt*(enemy.type==='bat'?7:4);
+    if (enemy.special) { enemy.specialCharge-=dt; if(enemy.specialCharge<=0) resolveBossSpecial(enemy); return; }
+    if (enemy.specialCd>0) enemy.specialCd-=dt;
+    if (enemy.boss && enemy.specialCd<=0) { startBossSpecial(enemy); return; }
+    let target=null,bestDistance=enemy.boss?420:enemy.elite?330:195;
+    for(const hero of state.heroes){if(hero.downTimer>0)continue;const d=dist(enemy,hero);if(d<bestDistance){target=hero;bestDistance=d;}}
+    if(!target)return;
+    const d=Math.max(1,dist(enemy,target));
+    if(enemy.elite && enemy.specialCd<=0 && d>90){
+      if(enemy.type==='skeleton'){
+        const dx=(target.x-enemy.x)/d,dy=(target.y-enemy.y)/d;
+        state.projectiles.push({kind:'enemyArrow',x:enemy.x+dx*20,y:enemy.y+dy*20,vx:dx*270,vy:dy*270,dirX:dx,dirY:dy,life:2.4,stuck:0});
+      } else {
+        state.effects.push({kind:'enemyLightning',x1:enemy.x,y1:enemy.y,x2:target.x,y2:target.y,life:.28,damagePending:true});
+      }
+      enemy.specialCd=3+Math.random()*2; return;
     }
-    if (!target) return;
-    const d = Math.max(1, dist(enemy, target));
-    if (d > enemy.r + target.r + 3) tryMove(enemy, ((target.x - enemy.x) / d) * enemy.speed * dt, ((target.y - enemy.y) / d) * enemy.speed * dt);
+    if(d>enemy.r+target.r+3) tryMove(enemy,((target.x-enemy.x)/d)*enemy.speed*dt,((target.y-enemy.y)/d)*enemy.speed*dt);
     else {
-      if (target.role === 'warrior') {
-        const towardEnemyX = (enemy.x - target.x) / d, towardEnemyY = (enemy.y - target.y) / d;
-        const facing = target.dirX * towardEnemyX + target.dirY * towardEnemyY;
-        if (facing > .35) { tryMove(enemy, towardEnemyX * 7, towardEnemyY * 7); if (enemy.attackCd <= 0) sfx('shield'); }
-      }
-      if (enemy.attackCd <= 0) {
-      enemy.attackCd = enemy.type === 'golem' ? 1.55 : 1.25;
-      target.hp -= enemy.damage; target.hitFlash = .24; spawnBurst(target.x, target.y, colors.red, enemy.type === 'golem' ? 10 : 6);
-      if (target.hp <= 0) target.downTimer = 2.8;
-      }
+      if(target.role==='warrior'){const ex=(enemy.x-target.x)/d,ey=(enemy.y-target.y)/d,facing=target.dirX*ex+target.dirY*ey;if(facing>.35){tryMove(enemy,ex*7,ey*7);if(enemy.attackCd<=0)sfx('shield');}}
+      if(enemy.attackCd<=0){enemy.attackCd=enemy.boss?1.7:1.25;hurtHero(target,enemy.damage);}
     }
   }
 

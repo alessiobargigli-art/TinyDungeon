@@ -21,10 +21,6 @@
   };
 
   const spawn = [{ x: 92, y: 270 }, { x: 126, y: 304 }, { x: 126, y: 236 }];
-  const commonWalls = [
-    { x: 0, y: 0, w: W, h: 28 }, { x: 0, y: H - 28, w: W, h: 28 },
-    { x: 0, y: 0, w: 28, h: H }, { x: W - 28, y: 0, w: 28, h: H }
-  ];
 
   const ENEMY_DEFAULTS = {
     slime: { r: 16, color: '#76bd72', damage: 1 },
@@ -62,6 +58,38 @@
         { name: 'Scrigno sigillato', type: 'key', chest: { x: 735, y: 270 }, enemies: [['skeleton', 500, 150, 5, 41], ['skeleton', 500, 390, 5, 41], ['bat', 620, 170, 3, 64], ['bat', 620, 370, 3, 64]], objective: 'Abbatti i quattro custodi e apri lo scrigno.' },
         { name: 'Rune invertite', type: 'torches', torches: [{ x: 340, y: 145 }, { x: 610, y: 145 }, { x: 610, y: 395 }, { x: 340, y: 395 }], sequence: [2, 0, 3, 1], objective: 'Leggi le rune: III · I · IV · II.' },
         { name: 'Guardiano rinforzato', type: 'boss', enemies: [['golem', 660, 270, 20, 26], ['bat', 560, 150, 3, 62], ['bat', 560, 390, 3, 62]], objective: 'Sconfiggi il Guardiano e i suoi rinforzi.' }
+      ]
+    },
+    explore: {
+      label: 'ESPLORAZIONE', accent: '#8fd3a8', tints: ['#45534f', '#4c4f5b', '#43545b', '#514b58', '#4b5548', '#535044', '#45505a', '#51464c'],
+      rooms: [
+        { name: 'Il corridoio perduto', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:90,y:540},{x:125,y:575},{x:125,y:505}], exit: {x:1820,y:540}, extraWalls: [
+          {x:350,y:28,w:32,h:310},{x:350,y:510,w:32,h:542},{x:700,y:28,w:32,h:570},{x:700,y:770,w:32,h:282},{x:1050,y:28,w:32,h:300},{x:1050,y:500,w:32,h:552},{x:1400,y:28,w:32,h:590},{x:1400,y:790,w:32,h:262}
+        ], enemies: [['slime',520,420,3,32],['bat',880,720,2,56],['skeleton',1220,360,4,36],['slime',1580,700,3,32]], objective: 'Esplora il dungeon e raggiungi la porta a est.' },
+        { name: 'Le sale gemelle', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:100,y:160},{x:135,y:195},{x:135,y:125}], exit: {x:1810,y:920}, extraWalls: [
+          {x:300,y:260,w:520,h:32},{x:300,y:260,w:32,h:430},{x:560,y:500,w:520,h:32},{x:1048,y:260,w:32,h:272},{x:850,y:760,w:650,h:32},{x:1468,y:420,w:32,h:372}
+        ], enemies: [['bat',460,400,2,58],['slime',760,680,3,33],['skeleton',1180,610,4,38],['bat',1540,830,2,60]], objective: 'Attraversa le sale collegate e trova l’uscita.' },
+        { name: 'Il serpente di pietra', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:95,y:540},{x:130,y:575},{x:130,y:505}], exit: {x:1815,y:540}, extraWalls: [
+          {x:280,y:28,w:32,h:650},{x:520,y:400,w:32,h:652},{x:760,y:28,w:32,h:650},{x:1000,y:400,w:32,h:652},{x:1240,y:28,w:32,h:650},{x:1480,y:400,w:32,h:652}
+        ], enemies: [['slime',400,820,4,34],['bat',650,220,3,60],['skeleton',900,820,5,39],['bat',1130,220,3,60],['skeleton',1380,820,5,39],['slime',1650,250,4,34]], objective: 'Segui il percorso di pietra fino alla porta.' },
+        { name: 'Le quattro corti', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit: {x:1810,y:970}, extraWalls: [
+          {x:470,y:28,w:32,h:360},{x:470,y:560,w:32,h:492},{x:940,y:220,w:32,h:640},{x:1410,y:28,w:32,h:360},{x:1410,y:560,w:32,h:492},
+          {x:500,y:520,w:300,h:32},{x:1110,y:520,w:300,h:32}
+        ], enemies: [['slime',650,250,4,34],['skeleton',780,760,5,40],['bat',1120,300,3,62],['skeleton',1300,760,5,40],['bat',1600,450,3,62]], objective: 'Supera le quattro corti e raggiungi l’uscita.' },
+        { name: 'La cripta lunga', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:100,y:540},{x:135,y:575},{x:135,y:505}], exit: {x:1810,y:540}, extraWalls: [
+          {x:300,y:200,w:500,h:32},{x:300,y:848,w:500,h:32},{x:800,y:200,w:32,h:260},{x:800,y:620,w:32,h:260},
+          {x:1080,y:200,w:520,h:32},{x:1080,y:848,w:520,h:32},{x:1080,y:200,w:32,h:260},{x:1080,y:620,w:32,h:260}
+        ], enemies: [['skeleton',500,540,5,40],['bat',760,540,3,62],['slime',960,350,4,34],['slime',960,730,4,34],['skeleton',1320,540,5,40],['bat',1570,540,3,62]], objective: 'Percorri la cripta e trova la porta oltre i guardiani.' },
+        { name: 'Il dedalo delle torce', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:100,y:900},{x:135,y:935},{x:135,y:865}], exit: {x:1810,y:150}, extraWalls: [
+          {x:320,y:180,w:32,h:872},{x:620,y:28,w:32,h:720},{x:920,y:300,w:32,h:752},{x:1220,y:28,w:32,h:720},{x:1520,y:300,w:32,h:752}
+        ], enemies: [['bat',470,850,3,64],['skeleton',770,180,5,41],['bat',1070,850,3,64],['skeleton',1370,180,5,41],['slime',1670,500,4,35]], objective: 'Risali il dedalo fino alla porta illuminata.' },
+        { name: 'La via dei guardiani', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, spawn: [{x:100,y:540},{x:135,y:575},{x:135,y:505}], exit: {x:1810,y:540}, extraWalls: [
+          {x:380,y:28,w:32,h:390},{x:380,y:610,w:32,h:442},{x:760,y:250,w:32,h:802},{x:1140,y:28,w:32,h:802},{x:1520,y:250,w:32,h:802}
+        ], enemies: [['skeleton',550,520,6,42],['bat',900,180,4,66],['slime',980,850,5,36],['skeleton',1300,520,6,42],['bat',1680,850,4,66]], objective: 'Trova un varco tra i guardiani e raggiungi la porta.' },
+        { name: 'Il grande labirinto', type: 'maze', world: { width: 1920, height: 1080 }, startSolved: true, requiresKey: false, spawn: [{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit: {x:1810,y:970}, extraWalls: [
+          {x:280,y:28,w:32,h:500},{x:280,y:700,w:32,h:352},{x:560,y:250,w:32,h:802},{x:840,y:28,w:32,h:620},{x:840,y:820,w:32,h:232},
+          {x:1120,y:250,w:32,h:802},{x:1400,y:28,w:32,h:620},{x:1400,y:820,w:32,h:232},{x:1680,y:250,w:32,h:500}
+        ], enemies: [['skeleton',430,620,6,43],['bat',700,150,4,67],['slime',980,760,5,37],['skeleton',1260,520,6,43],['bat',1540,760,4,67],['golem',1690,900,12,24]], objective: 'Attraversa il Grande Labirinto e raggiungi il portale finale.' }
       ]
     },
     hard: {
@@ -105,14 +133,28 @@
   let lastTime = performance.now();
   let netInputTimer = 0;
   let snapshotTimer = 0;
+  const camera = { x: 0, y: 0 };
 
   function normalizeDifficulty(value) { return CAMPAIGNS[value] ? value : 'easy'; }
   function campaign() { return CAMPAIGNS[difficulty]; }
   function roomConfig() { return campaign().rooms[state.roomIndex]; }
   function difficultyLabel() { return campaign().label; }
+  function worldSize() {
+    const world = roomConfig()?.world;
+    return { width: Math.max(W, Number(world?.width) || W), height: Math.max(H, Number(world?.height) || H) };
+  }
+  function roomSpawn(index) { return (roomConfig()?.spawn || spawn)[index] || spawn[index]; }
+  function commonWalls() {
+    const world = worldSize();
+    return [
+      { x: 0, y: 0, w: world.width, h: 28 }, { x: 0, y: world.height - 28, w: world.width, h: 28 },
+      { x: 0, y: 0, w: 28, h: world.height }, { x: world.width - 28, y: 0, w: 28, h: world.height }
+    ];
+  }
 
-  function createHero(name, index, palette, speed) {
-    return { name, x: spawn[index].x, y: spawn[index].y, r: 14, hp: 5, maxHp: 5, speed, palette, dirX: 1, dirY: 0, attackCd: 0, hitFlash: 0, downTimer: 0, isAI: true, bob: index * 1.7, _interactHeld: false };
+  function createHero(name, index, palette, speed, cfg) {
+    const start = (cfg.spawn || spawn)[index] || spawn[index];
+    return { name, x: start.x, y: start.y, r: 14, hp: 5, maxHp: 5, speed, palette, dirX: 1, dirY: 0, attackCd: 0, hitFlash: 0, downTimer: 0, isAI: true, bob: index * 1.7, _interactHeld: false };
   }
 
   function createEnemy(spec) {
@@ -124,12 +166,12 @@
   function createState(roomIndex = 0, keepKey = false) {
     const cfg = CAMPAIGNS[difficulty].rooms[roomIndex];
     return {
-      difficulty, humans: 1, roomIndex, roomSolved: false, complete: false, hasKey: keepKey,
+      difficulty, humans: 1, roomIndex, roomSolved: !!cfg.startSolved, complete: false, hasKey: keepKey,
       elapsed: 0, roomElapsed: 0, particles: [], timedRemaining: cfg.timed || 0,
       heroes: [
-        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 116),
-        createHero('Rogue', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 126),
-        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 108)
+        createHero('Knight', 0, { body: '#4778a8', trim: '#d8b36b', skin: '#f0c58f', dark: '#26334c' }, 116, cfg),
+        createHero('Rogue', 1, { body: '#6ea36b', trim: '#d8d0a2', skin: '#d9a879', dark: '#273b2f' }, 126, cfg),
+        createHero('Mage', 2, { body: '#845f9f', trim: '#78c0c1', skin: '#e7b98d', dark: '#382a4b' }, 108, cfg)
       ],
       enemies: (cfg.enemies || []).map(createEnemy),
       levers: (cfg.levers || []).map(p => ({ ...p, on: false })),
@@ -139,7 +181,7 @@
       blocks: (cfg.blocks || []).map(b => ({ x: b.x, y: b.y, r: 24, target: { x: b.tx, y: b.ty, r: 30 }, solved: false })),
       torches: (cfg.torches || []).map(p => ({ ...p, lit: false })),
       torchProgress: 0,
-      exit: { x: 870, y: 270 }
+      exit: cfg.exit ? { ...cfg.exit } : { x: 870, y: 270 }
     };
   }
 
@@ -164,11 +206,11 @@
     state.humans = humans;
     applyRosterFlags();
     updateObjective();
-    showMessage(`${difficultyLabel()} · STANZA ${index + 1}/8 · ${roomConfig().name}`, 2.2);
+    showMessage(`${difficultyLabel()} · STANZA ${index + 1}/${campaign().rooms.length} · ${roomConfig().name}`, 2.2);
   }
 
   function advanceRoom() {
-    if (state.roomIndex < 7) enterRoom(state.roomIndex + 1);
+    if (state.roomIndex < campaign().rooms.length - 1) enterRoom(state.roomIndex + 1);
     else {
       state.complete = true;
       updateObjective();
@@ -189,7 +231,7 @@
   function updateObjective() {
     if (state.complete) { objectiveEl.textContent = `${difficultyLabel()} completato!`; return; }
     const cfg = roomConfig();
-    if (state.roomSolved) { objectiveEl.textContent = state.roomIndex === 7 ? 'Il portale è aperto. Entra.' : 'La porta è aperta. Raggiungila.'; return; }
+    if (state.roomSolved) { objectiveEl.textContent = state.roomIndex === campaign().rooms.length - 1 ? 'Il portale è aperto. Entra.' : 'La porta è aperta. Raggiungila.'; return; }
     if (cfg.type === 'torches') objectiveEl.textContent = `${cfg.objective} (${state.torchProgress}/${state.torches.length})`;
     else if (cfg.timed && state.levers.some(l => l.on)) objectiveEl.textContent = `${cfg.objective} ${Math.max(0, state.timedRemaining).toFixed(1)}s`;
     else objectiveEl.textContent = cfg.objective;
@@ -224,7 +266,7 @@
 
   function roomWalls() {
     const cfg = roomConfig();
-    const walls = [...commonWalls, ...(cfg.extraWalls || [])];
+    const walls = [...commonWalls(), ...(cfg.extraWalls || [])];
     if (cfg.type === 'lever' && cfg.gateX && !state.roomSolved) walls.push({ x: cfg.gateX, y: 28, w: 28, h: H - 56 });
     if (cfg.type === 'blocks') {
       walls.push({ x: 270, y: 28, w: 28, h: 145 }, { x: 270, y: 367, w: 28, h: 145 });
@@ -347,7 +389,7 @@
 
     if (near(hero, state.exit, 64)) {
       if (!state.roomSolved) { showMessage('La porta è ancora sigillata.'); return; }
-      if (state.roomIndex === 7 && !state.hasKey) { showMessage('Il portale richiede la Chiave Antica.'); return; }
+      if (state.roomIndex === campaign().rooms.length - 1 && roomConfig().requiresKey !== false && !state.hasKey) { showMessage('Il portale richiede la Chiave Antica.'); return; }
       advanceRoom();
     }
   }
@@ -389,7 +431,7 @@
     hero.attackCd = Math.max(0, hero.attackCd - dt); hero.hitFlash = Math.max(0, hero.hitFlash - dt); hero.bob += dt * 5;
     if (hero.downTimer > 0) {
       hero.downTimer -= dt;
-      if (hero.downTimer <= 0) { hero.hp = hero.maxHp; hero.x = spawn[index].x; hero.y = spawn[index].y; }
+      if (hero.downTimer <= 0) { hero.hp = hero.maxHp; hero.x = roomSpawn(index).x; hero.y = roomSpawn(index).y; }
       return;
     }
     const input = inputForHero(hero, index);
@@ -517,15 +559,28 @@
 
   function pxRect(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
 
+  function updateCamera() {
+    const hero = state.heroes?.[localSlot] || state.heroes?.[0];
+    const world = worldSize();
+    if (!hero) { camera.x = 0; camera.y = 0; return; }
+    camera.x = clamp(hero.x - W / 2, 0, Math.max(0, world.width - W));
+    camera.y = clamp(hero.y - H / 2, 0, Math.max(0, world.height - H));
+  }
+
   function drawFloor() {
-    pxRect(0, 0, W, H, '#241f28');
+    const world = worldSize();
+    pxRect(0, 0, world.width, world.height, '#241f28');
     const tint = campaign().tints[state.roomIndex];
-    for (let y = 28; y < H - 28; y += TILE) {
-      for (let x = 28; x < W - 28; x += TILE) {
+    const startX = Math.max(28, Math.floor((camera.x - TILE) / TILE) * TILE);
+    const startY = Math.max(28, Math.floor((camera.y - TILE) / TILE) * TILE);
+    const endX = Math.min(world.width - 28, camera.x + W + TILE);
+    const endY = Math.min(world.height - 28, camera.y + H + TILE);
+    for (let y = startY; y < endY; y += TILE) {
+      for (let x = startX; x < endX; x += TILE) {
         const alt = ((x / TILE + y / TILE) | 0) % 2;
         pxRect(x, y, TILE, TILE, alt ? tint : colors.floorB);
-        pxRect(x + 2, y + 2, TILE - 4, 1, '#79647533');
-        if (((x * 7 + y * 13 + state.roomIndex * 17) % 101) < 6) { pxRect(x + 9, y + 18, 8, 2, colors.floorCrack); pxRect(x + 15, y + 16, 2, 5, colors.floorCrack); }
+        pxRect(x + 2, y + 2, TILE - 4, 2, '#ffffff08');
+        if (((x * 3 + y * 5) / TILE) % 11 === 0) pxRect(x + 9, y + 19, 10, 2, colors.floorCrack);
       }
     }
   }
@@ -582,7 +637,7 @@
   }
 
   function drawExit() {
-    const p = state.exit, open = state.roomSolved, final = state.roomIndex === 7;
+    const p = state.exit, open = state.roomSolved, final = state.roomIndex === campaign().rooms.length - 1;
     pxRect(p.x - 28, p.y - 48, 56, 96, '#211c26'); pxRect(p.x - 21, p.y - 41, 42, 82, final ? '#665776' : '#6e584d'); pxRect(p.x - 13, p.y - 31, 26, 62, open ? (final ? '#71bfa8' : '#8b7458') : '#3b3038');
     if (open) { const pulse = Math.round(Math.sin(state.elapsed * 4) * 3); pxRect(p.x - 7 - pulse, p.y - 22 - pulse, 14 + pulse * 2, 44 + pulse * 2, final ? '#9ce6c5aa' : '#d1a86a66'); }
   }
@@ -621,7 +676,7 @@
 
   function drawHUD() {
     pxRect(38, 38, 355, 32, '#151219cc'); ctx.textAlign = 'left'; ctx.fillStyle = campaign().accent; ctx.font = 'bold 13px monospace';
-    ctx.fillText(`${difficultyLabel()} · STANZA ${state.roomIndex + 1}/8 · ${roomConfig().name.toUpperCase()}`, 50, 58);
+    ctx.fillText(`${difficultyLabel()} · STANZA ${state.roomIndex + 1}/${campaign().rooms.length} · ${roomConfig().name.toUpperCase()}`, 50, 58);
     pxRect(38, 76, 170, 26, '#151219aa'); ctx.fillStyle = '#b9aa92'; ctx.font = 'bold 11px monospace'; ctx.fillText(`SQUADRA ${state.humans}/3`, 50, 94);
     if (state.hasKey) { pxRect(820, 42, 96, 28, '#151219cc'); ctx.fillStyle = '#f2ddb8'; ctx.fillText('CHIAVE', 850, 60); }
     if (state.complete) {
@@ -631,7 +686,13 @@
   }
 
   function draw() {
-    drawFloor(); drawDecor(); roomWalls().forEach(drawWallRect); drawRoomSpecials(); state.enemies.forEach(drawEnemy); state.heroes.forEach(drawHero); state.particles.forEach(p => pxRect(p.x, p.y, p.size, p.size, p.color)); drawHUD();
+    updateCamera();
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(-Math.round(camera.x), -Math.round(camera.y));
+    drawFloor(); drawDecor(); roomWalls().forEach(drawWallRect); drawRoomSpecials(); state.enemies.forEach(drawEnemy); state.heroes.forEach(drawHero); state.particles.forEach(p => pxRect(p.x, p.y, p.size, p.size, p.color));
+    ctx.restore();
+    drawHUD();
   }
 
   function frame(now) {

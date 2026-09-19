@@ -29,7 +29,10 @@
   window.addEventListener('beforeinstallprompt', event => {
     event.preventDefault();
     deferredInstallPrompt = event;
-    // iOS Safari still performs page zoom for multi-touch even when descendants use
+    updateInstallUi();
+  });
+
+  // iOS Safari still performs page zoom for multi-touch even when descendants use
   // touch-action:none. During gameplay consume multi-touch at document level.
   document.addEventListener('touchstart', event => {
     if (document.body.classList.contains('game-playing') && event.touches.length > 1) event.preventDefault();
@@ -44,19 +47,21 @@
     try {
       if ('serviceWorker' in navigator) {
         const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map(registration => registration.update()));
+        for (const registration of registrations) {
+          await registration.update();
+          const waiting = registration.waiting;
+          if (waiting) waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
       }
       if ('caches' in window) {
         const keys = await caches.keys();
         await Promise.all(keys.filter(key => key.startsWith('tinydungeon-')).map(key => caches.delete(key)));
       }
-    } catch (_) { /* Reload still gives the network-first service worker a chance to update. */ }
+    } catch (_) { /* Always continue with a cache-busted navigation. */ }
+
     const url = new URL(location.href);
     url.searchParams.set('_refresh', Date.now().toString());
     location.replace(url.toString());
-  });
-
-  updateInstallUi();
   });
 
   window.addEventListener('appinstalled', () => {

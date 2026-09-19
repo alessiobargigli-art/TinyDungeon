@@ -261,7 +261,7 @@
         { name:'Il labirinto dei guardiani', type:'maze', world:{width:2840,height:1600}, startSolved:true, spawn:[{x:100,y:800},{x:135,y:835},{x:135,y:765}], exit:{x:2740,y:800}, extraWalls:[
           {x:350,y:28,w:32,h:600},{x:350,y:800,w:32,h:772},{x:700,y:300,w:32,h:1272},{x:1050,y:28,w:32,h:600},{x:1050,y:800,w:32,h:772},{x:1400,y:300,w:32,h:1272},{x:1750,y:28,w:32,h:600},{x:1750,y:800,w:32,h:772},{x:2100,y:300,w:32,h:1272},{x:2450,y:28,w:32,h:600},{x:2450,y:800,w:32,h:772}
         ], enemies:[['skeleton',520,760,6,44],['bat',850,180,4,68],['slime',900,1350,5,38,{group:'packA',combatRole:'front'}],['skeleton',1220,760,7,45,{group:'packA',combatRole:'ranged'}],['bat',1570,1350,5,69],['skeleton',1920,760,7,45,{group:'packB',combatRole:'ranged'}],['slime',2260,1350,6,39,{group:'packB',combatRole:'front'}],['bat',2600,350,5,70]], objective:'Supera i guardiani e trova l’uscita.' },
-        { name:'Il labirinto infinito', type:'maze', world:{width:3200,height:1800}, startSolved:true, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:3100,y:1700}, extraWalls:[
+        { name:'Il labirinto infinito', type:'maze', world:{width:3200,height:1800}, startSolved:true, requiresKey:false, spawn:[{x:100,y:100},{x:135,y:135},{x:170,y:100}], exit:{x:3100,y:1700}, extraWalls:[
           {x:320,y:200,w:32,h:1572},{x:640,y:28,w:32,h:1350},{x:960,y:350,w:32,h:1422},{x:1280,y:28,w:32,h:1350},{x:1600,y:350,w:32,h:1422},{x:1920,y:28,w:32,h:1350},{x:2240,y:350,w:32,h:1422},{x:2560,y:28,w:32,h:1350},{x:2880,y:350,w:32,h:1200},
           {x:640,y:900,w:180,h:32},{x:1280,y:650,w:180,h:32},{x:1920,y:1100,w:180,h:32},{x:2560,y:700,w:180,h:32}
         ], enemies:[['skeleton',470,1500,7,46],['bat',800,180,5,70],['slime',1100,1500,6,40,{group:'packA',combatRole:'front'}],['skeleton',1450,800,7,47,{group:'packA',combatRole:'ranged'}],['bat',1770,1500,5,71],['skeleton',2100,500,8,47,{group:'packB',combatRole:'ranged'}],['slime',2420,1500,6,40,{group:'packB',combatRole:'front'}],['bat',2750,500,5,72],['golem',3020,1550,14,25]], objective:'Attraversa il Labirinto Infinito e raggiungi il portale.' }
@@ -419,11 +419,25 @@
   }
 
   function heroIndex(role) { return role === 'archer' ? 1 : role === 'mage' ? 2 : 0; }
-  function applyRosterFlags() {
+  function configureHeroRole(hero, role) {
+    const template = state.heroes[heroIndex(role)];
+    if (!hero || !template) return;
+    hero.role = role;
+    hero.name = role === 'archer' ? 'Archer' : role === 'mage' ? 'Mage' : 'Knight';
+    hero.palette = { ...template.palette };
+    hero.speed = role === 'archer' ? 172 : role === 'mage' ? 150 : 160;
+    const newMaxHp = role === 'mage' ? 3 : 5;
+    hero.maxHp = newMaxHp;
+    hero.hp = Math.min(hero.hp, newMaxHp);
+  }
+  function applyRosterFlags(players = []) {
     if (!state?.heroes) return;
-    const humanHeroes = new Set(playerHeroBySlot.values());
-    state.humans = humanHeroes.size;
-    state.heroes.forEach((hero, index) => { hero.isAI = !humanHeroes.has(index); });
+    const bySlot = new Map(players.map(p => [Number(p.slot), p.hero]));
+    state.humans = bySlot.size;
+    state.heroes.forEach((hero, index) => {
+      hero.isAI = !bySlot.has(index);
+      if (bySlot.has(index)) configureHeroRole(hero, bySlot.get(index));
+    });
   }
 
   function allEnemiesDead() { return !state.enemies.length || state.enemies.every(e => !e.alive); }
@@ -775,7 +789,7 @@
   function hurtHero(hero, amount, color = colors.red) {
     if (!hero || hero.downTimer > 0) return;
     hero.hp -= amount; hero.hitFlash = .24; spawnBurst(hero.x, hero.y, color, 8);
-    if (hero.hp <= 0) hero.downTimer = 2.8;
+    if (hero.hp <= 0) hero.downTimer = 2.0;
   }
 
   function startBossSpecial(enemy) {
@@ -1146,8 +1160,8 @@
 
   function setRoster(players) {
     connectedSlots = new Set((players || []).map(p => Number(p.slot)).filter(v => v >= 0 && v <= 2));
-    playerHeroBySlot = new Map((players || []).filter(p => p.hero).map(p => [Number(p.slot), heroIndex(p.hero)]));
-    applyRosterFlags();
+    playerHeroBySlot = new Map((players || []).filter(p => p.hero).map(p => [Number(p.slot), Number(p.slot)]));
+    applyRosterFlags(players || []);
   }
 
   difficultySelect?.addEventListener('change', () => chooseDifficulty(difficultySelect.value));

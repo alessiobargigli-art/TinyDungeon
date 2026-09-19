@@ -1,4 +1,4 @@
-const CACHE = 'tinydungeon-shell-v15';
+const CACHE = 'tinydungeon-shell-v16';
 const SHELL = [
   '/music/manifest.json',
   '/', '/index.html', '/styles.css', '/mobile.css', '/version.js', '/config.js', '/network.js', '/game-v2.js', '/joystick.js', '/app.js',
